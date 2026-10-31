@@ -1,0 +1,2044 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Rifline – Présentation du site public (mobile)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --blue: #1d4fe8;
+        --ink: #0d1220;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #04060b;
+        font-family:
+          "Outfit",
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          "Helvetica Neue",
+          Arial,
+          sans-serif;
+      }
+      body.rec {
+        cursor: none;
+      }
+      #fit {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 1080px;
+        height: 1920px;
+        transform-origin: 0 0;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background: radial-gradient(
+          1500px 1100px at 12% 6%,
+          #2f58e6 0%,
+          #1b2c74 46%,
+          #0a1130 100%
+        );
+      }
+      #stage::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          1000px 800px at 95% 100%,
+          rgba(74, 91, 255, 0.35),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transform: translateX(90px) scale(0.95);
+        z-index: 2;
+      }
+      .slide.vis {
+        opacity: 1;
+        transform: none;
+        transition:
+          opacity 0.9s cubic-bezier(0.65, 0, 0.35, 1),
+          transform 1.1s cubic-bezier(0.65, 0, 0.35, 1);
+      }
+      .slide.out {
+        opacity: 0;
+        transform: translateX(-90px) scale(0.95);
+        transition:
+          opacity 0.9s cubic-bezier(0.65, 0, 0.35, 1),
+          transform 1.1s cubic-bezier(0.65, 0, 0.35, 1);
+      }
+      .intro {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        text-align: center;
+        padding: 0 90px;
+      }
+      .intro .w {
+        font-size: 190px;
+        font-weight: 600;
+        letter-spacing: -4px;
+        line-height: 1;
+      }
+      .intro .tg {
+        font-size: 56px;
+        font-weight: 400;
+        color: #d5ddff;
+        margin-top: 30px;
+        line-height: 1.25;
+      }
+      .intro .sb {
+        margin-top: 70px;
+        font-size: 34px;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        padding: 16px 38px;
+        border: 2px solid rgba(255, 255, 255, 0.45);
+        border-radius: 999px;
+        color: #fff;
+      }
+      .intro .w,
+      .intro .tg,
+      .intro .sb {
+        opacity: 0;
+        transform: translateY(16px);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+      }
+      .intro .on {
+        opacity: 1;
+        transform: none;
+      }
+
+      /* téléphone */
+      .phone {
+        position: absolute;
+        left: 208px;
+        top: 200px;
+        width: 664px;
+        height: 1390px;
+        border-radius: 96px;
+        background: #0c0e13;
+        box-shadow:
+          0 0 0 3px #2b303b,
+          0 60px 140px rgba(0, 0, 0, 0.55),
+          0 16px 40px rgba(0, 0, 0, 0.3);
+      }
+      .phone::before,
+      .phone::after {
+        content: "";
+        position: absolute;
+        width: 6px;
+        background: #2b303b;
+        border-radius: 3px;
+      }
+      .phone::before {
+        left: -9px;
+        top: 250px;
+        height: 110px;
+      }
+      .phone::after {
+        right: -9px;
+        top: 330px;
+        height: 170px;
+      }
+      .scr {
+        position: absolute;
+        left: 20px;
+        top: 20px;
+        width: 390px;
+        height: 844px;
+        transform: scale(1.6);
+        transform-origin: 0 0;
+        overflow: hidden;
+        background: #fff;
+        border-radius: 46px;
+        color: var(--ink);
+      }
+      .isl {
+        position: absolute;
+        left: 50%;
+        top: 11px;
+        width: 104px;
+        height: 28px;
+        margin-left: -52px;
+        border-radius: 14px;
+        background: #000;
+        z-index: 60;
+      }
+      .sbar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 390px;
+        height: 44px;
+        z-index: 50;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 32px 0 36px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #202124;
+      }
+      .sbar .r {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .cur {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 44px;
+        height: 44px;
+        opacity: 0;
+        z-index: 70;
+        pointer-events: none;
+        transition:
+          opacity 0.3s,
+          transform 0.8s cubic-bezier(0.45, 0, 0.2, 1);
+      }
+      .cur i {
+        display: block;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(26, 34, 54, 0.28);
+        border: 3px solid rgba(255, 255, 255, 0.95);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      }
+      .rip {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        margin: -12px 0 0 -12px;
+        border-radius: 50%;
+        border: 4px solid rgba(47, 123, 255, 0.85);
+        z-index: 69;
+        pointer-events: none;
+        animation: rip 0.65s ease-out forwards;
+      }
+      @keyframes rip {
+        from {
+          transform: scale(0.6);
+          opacity: 1;
+        }
+        to {
+          transform: scale(4.2);
+          opacity: 0;
+        }
+      }
+
+      /* Google mobile */
+      .gl {
+        position: absolute;
+        inset: 0;
+        background: #fff;
+        z-index: 30;
+        transition: opacity 0.7s ease;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #202124;
+      }
+      .gl.off {
+        opacity: 0;
+      }
+      .g0,
+      .g1 {
+        position: absolute;
+        inset: 0;
+        transition: opacity 0.5s ease;
+      }
+      .g1 {
+        opacity: 0;
+      }
+      .gl.res .g0 {
+        opacity: 0;
+      }
+      .gl.res .g1 {
+        opacity: 1;
+      }
+      .glogo {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 250px;
+        text-align: center;
+        font-size: 62px;
+        font-weight: 500;
+        letter-spacing: -2px;
+      }
+      .pill {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        height: 48px;
+        border: 1px solid #dfe1e5;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 1px 6px rgba(32, 33, 36, 0.18);
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        gap: 12px;
+        font-size: 16px;
+        transition: box-shadow 0.2s;
+      }
+      .pill.f {
+        box-shadow: 0 2px 10px rgba(32, 33, 36, 0.3);
+      }
+      .pill .tx {
+        flex: 1;
+        display: flex;
+        align-items: center;
+      }
+      .caret {
+        display: inline-block;
+        width: 1.5px;
+        height: 20px;
+        background: #202124;
+        margin-left: 1px;
+        animation: cb 1s steps(1) infinite;
+      }
+      @keyframes cb {
+        50% {
+          opacity: 0;
+        }
+      }
+      .pill svg {
+        color: #5f6368;
+        flex: none;
+      }
+      .g1 .top {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 44px;
+        height: 64px;
+        border-bottom: 1px solid #ebebeb;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 14px;
+      }
+      .g1 .pill {
+        position: static;
+        flex: 1;
+        height: 42px;
+      }
+      .res1 {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        top: 128px;
+      }
+      .fav {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .fav .ic {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1px solid #dfe1e5;
+        display: grid;
+        place-items: center;
+        background: #fff;
+      }
+      .fav .ic i {
+        width: 0;
+        height: 0;
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-bottom: 12px solid #000;
+        display: block;
+      }
+      .fav b {
+        display: block;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 18px;
+      }
+      .fav small {
+        display: block;
+        font-size: 12px;
+        color: #4d5156;
+        line-height: 16px;
+      }
+      .rt {
+        display: block;
+        margin-top: 10px;
+        font-size: 20px;
+        line-height: 26px;
+        color: #681da8;
+        border-radius: 6px;
+        padding: 2px 4px;
+        margin-left: -4px;
+        transition: background 0.2s;
+      }
+      .rt.hl {
+        background: rgba(103, 58, 183, 0.18);
+      }
+      .rs {
+        margin-top: 6px;
+        font-size: 14px;
+        line-height: 22px;
+        color: #4d5156;
+      }
+      .rs b {
+        font-weight: 700;
+      }
+      .ai {
+        margin-top: 30px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15px;
+      }
+
+      /* site */
+      .site {
+        position: absolute;
+        inset: 0;
+        background: #fff;
+        opacity: 0;
+        transition: opacity 0.7s ease;
+        z-index: 20;
+        font-family: "Outfit", "Segoe UI", system-ui, Roboto, Arial, sans-serif;
+      }
+      .site.on {
+        opacity: 1;
+      }
+      .hdr {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 390px;
+        height: 100px;
+        padding: 44px 18px 0;
+        background: rgba(255, 255, 255, 0.97);
+        border-bottom: 1px solid #eef0f4;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 25;
+      }
+      .logo {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: #2563ff;
+        display: grid;
+        place-items: center;
+        color: #fff;
+      }
+      .hdr .nm {
+        font-size: 18px;
+        font-weight: 600;
+        flex: 1;
+      }
+      .hb {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid #e3e6ec;
+        display: grid;
+        place-items: center;
+        color: #3b4252;
+        background: #fff;
+      }
+      .hb.av {
+        background: #9b0f0f;
+        border-color: #9b0f0f;
+        color: #fff;
+      }
+      .page {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 390px;
+        transition: transform 1.2s cubic-bezier(0.45, 0, 0.2, 1);
+      }
+      .page > section,
+      .page > footer {
+        position: relative;
+      }
+      #hero {
+        padding: 120px 22px 34px;
+        background: linear-gradient(#d9e6ff 0, #eef4ff 55%, #fff 100%);
+      }
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: #fff;
+        border-radius: 99px;
+        padding: 6px 13px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #1747e0;
+        box-shadow: 0 2px 8px rgba(30, 60, 140, 0.1);
+      }
+      .tag i {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #e5173f;
+        display: block;
+      }
+      h1 {
+        font-size: 48px;
+        font-weight: 700;
+        line-height: 0.98;
+        letter-spacing: -1.8px;
+        margin-top: 18px;
+      }
+      h1 em {
+        font-style: normal;
+        color: var(--blue);
+      }
+      .hp {
+        font-size: 15px;
+        line-height: 1.6;
+        color: #4d5666;
+        margin-top: 16px;
+      }
+      .hbtn {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .b1,
+      .b2 {
+        flex: 1;
+        height: 46px;
+        border-radius: 23px;
+        display: grid;
+        place-items: center;
+        font-size: 13.5px;
+        font-weight: 600;
+      }
+      .b1 {
+        background: #1b5cff;
+        color: #fff;
+        box-shadow: 0 8px 18px rgba(27, 92, 255, 0.3);
+      }
+      .b2 {
+        background: #fff;
+        color: var(--ink);
+        border: 1px solid #dfe4ee;
+      }
+      .mem {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+        font-size: 12px;
+        color: #4d5666;
+      }
+      .stk {
+        display: flex;
+      }
+      .stk i {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        margin-left: -8px;
+        display: grid;
+        place-items: center;
+        font-style: normal;
+        font-size: 9.5px;
+        font-weight: 700;
+        color: #fff;
+      }
+      .stk i:first-child {
+        margin-left: 0;
+      }
+      .hcards {
+        margin-top: 30px;
+        padding-bottom: 6px;
+      }
+      .card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 14px;
+        box-shadow: 0 12px 30px rgba(30, 60, 140, 0.13);
+        position: relative;
+      }
+      .ph {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .av {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        flex: none;
+      }
+      .ph b {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+      .ph small {
+        font-size: 11px;
+        color: #8b94a5;
+      }
+      .pt {
+        font-size: 13px;
+        line-height: 1.55;
+        margin-top: 10px;
+        color: #1f2738;
+      }
+      .pf {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        margin-top: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #3b4252;
+      }
+      .pf .h {
+        color: #e5173f;
+      }
+      .pf span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #fff;
+        border-radius: 14px;
+        padding: 8px 16px 8px 8px;
+        box-shadow: 0 10px 26px rgba(30, 60, 140, 0.16);
+        position: relative;
+        z-index: 3;
+        width: max-content;
+        max-width: 330px;
+      }
+      .chip .ci {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        flex: none;
+      }
+      .chip b {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.25;
+      }
+      .chip small {
+        font-size: 10.5px;
+        color: #8b94a5;
+      }
+      .vid {
+        height: 120px;
+        border-radius: 12px;
+        margin-top: 10px;
+        background: linear-gradient(135deg, #1e46d8, #2f6bff 60%, #4f8bff);
+        position: relative;
+        display: grid;
+        place-items: center;
+      }
+      .vid .pl {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: #fff;
+        display: grid;
+        place-items: center;
+        color: #1d4fe8;
+      }
+      .vid em {
+        position: absolute;
+        right: 8px;
+        bottom: 8px;
+        background: rgba(0, 0, 0, 0.75);
+        color: #fff;
+        border-radius: 6px;
+        font-style: normal;
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+      section.s {
+        padding: 34px 22px;
+      }
+      .eb {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--blue);
+      }
+      h2 {
+        font-size: 25px;
+        font-weight: 700;
+        letter-spacing: -0.6px;
+        line-height: 1.15;
+        margin-top: 6px;
+      }
+      .vp {
+        display: inline-block;
+        margin-top: 14px;
+        border: 1px solid #dfe4ee;
+        border-radius: 99px;
+        padding: 8px 16px;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--blue);
+        background: #fff;
+      }
+      #une {
+        background: #f8faff;
+      }
+      .big {
+        margin-top: 20px;
+        background: #1648e8;
+        border-radius: 22px;
+        padding: 24px 22px;
+        min-height: 310px;
+        position: relative;
+        overflow: hidden;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .big .q {
+        position: absolute;
+        right: 18px;
+        top: 14px;
+        opacity: 0.3;
+      }
+      .big .circ {
+        position: absolute;
+        right: -50px;
+        bottom: -60px;
+        width: 170px;
+        height: 170px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .big p {
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1.3;
+        letter-spacing: -0.3px;
+        position: relative;
+        max-width: 300px;
+      }
+      .big .au {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+      }
+      .big .au b {
+        display: block;
+        font-size: 13px;
+      }
+      .big .au small {
+        font-size: 11px;
+        opacity: 0.8;
+      }
+      .pls {
+        margin-left: auto;
+        display: flex;
+        gap: 6px;
+      }
+      .pls span {
+        background: rgba(255, 255, 255, 0.18);
+        border-radius: 99px;
+        padding: 5px 11px;
+        font-size: 11.5px;
+        font-weight: 600;
+        display: flex;
+        gap: 5px;
+        align-items: center;
+      }
+      .sm {
+        margin-top: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .sm .card {
+        box-shadow: 0 2px 14px rgba(30, 60, 140, 0.08);
+        border: 1px solid #eef0f5;
+        padding: 16px;
+      }
+      .lk {
+        display: inline-flex;
+        gap: 5px;
+        align-items: center;
+        border-radius: 99px;
+        padding: 5px 11px;
+        font-size: 11.5px;
+        font-weight: 600;
+        background: #f1f3f7;
+        color: #3b4252;
+      }
+      .lk.r {
+        background: #ffe3e8;
+        color: #d4163f;
+      }
+      #how {
+        background: #fff;
+        text-align: center;
+      }
+      .sub2 {
+        font-size: 13px;
+        color: #5d6676;
+        margin-top: 8px;
+      }
+      .steps {
+        margin-top: 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        text-align: left;
+      }
+      .stp {
+        position: relative;
+      }
+      .num {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .num i {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        color: #fff;
+        font-style: normal;
+        font-weight: 700;
+        display: grid;
+        place-items: center;
+        font-size: 15px;
+      }
+      .num u {
+        flex: 1;
+        border-top: 2px dashed #cddcf7;
+      }
+      .sc {
+        border-radius: 20px;
+        border: 1px solid #eef0f5;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(30, 60, 140, 0.07);
+        background: #fff;
+      }
+      .sc .top {
+        padding: 16px;
+      }
+      .sc .mk {
+        background: #fff;
+        border-radius: 14px;
+        padding: 12px;
+        box-shadow: 0 4px 14px rgba(30, 60, 140, 0.1);
+        font-size: 12px;
+        color: #8b94a5;
+      }
+      .sc .bt {
+        padding: 16px 18px 18px;
+      }
+      .sc h3 {
+        font-size: 17px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .sc p {
+        font-size: 13px;
+        line-height: 1.55;
+        color: #5d6676;
+        margin-top: 5px;
+      }
+      .row2 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+      }
+      .pb {
+        background: #1b5cff;
+        color: #fff;
+        border-radius: 99px;
+        padding: 6px 14px;
+        font-size: 11.5px;
+        font-weight: 600;
+      }
+      .ok {
+        background: #d6f6e4;
+        color: #0b8a4a;
+        border-radius: 99px;
+        padding: 6px 12px;
+        font-size: 11.5px;
+        font-weight: 600;
+      }
+      .inp {
+        border: 1px solid #e1e5ee;
+        border-radius: 9px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 10px;
+      }
+      #feat {
+        background: #eaf1ff;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .fgrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 22px;
+        text-align: left;
+      }
+      .fc {
+        border-radius: 18px;
+        padding: 16px;
+      }
+      .fc .fi {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        background: #fff;
+        display: grid;
+        place-items: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .fc h4 {
+        font-size: 14.5px;
+        font-weight: 600;
+        margin-top: 12px;
+      }
+      .fc p {
+        font-size: 12px;
+        line-height: 1.5;
+        color: #4d5666;
+        margin-top: 5px;
+      }
+      #stats {
+        background: #0b1220;
+        color: #fff;
+        text-align: center;
+        padding: 36px 22px 40px;
+      }
+      #stats h2 {
+        font-size: 22px;
+        color: #fff;
+      }
+      .nums {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 24px;
+      }
+      .nums b {
+        display: block;
+        font-size: 46px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .nums span {
+        font-size: 12px;
+        color: #aab3c5;
+      }
+      #cta {
+        background: linear-gradient(#eef4ff, #dbe8ff);
+        padding: 34px 16px;
+      }
+      .cc {
+        background: #1648e8;
+        border-radius: 28px;
+        padding: 40px 22px;
+        text-align: center;
+        color: #fff;
+      }
+      .cc h2 {
+        font-size: 30px;
+        color: #fff;
+        margin: 0;
+      }
+      .cc p {
+        font-size: 14px;
+        margin-top: 10px;
+        opacity: 0.95;
+      }
+      .ctab {
+        display: inline-block;
+        margin-top: 22px;
+        background: #fff;
+        color: var(--blue);
+        border-radius: 99px;
+        padding: 14px 28px;
+        font-size: 14px;
+        font-weight: 600;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+      }
+      #foot {
+        background: #f8faff;
+        padding: 30px 22px 30px;
+      }
+      #foot .fl {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 18px;
+        font-weight: 600;
+      }
+      #foot p.d {
+        font-size: 13px;
+        line-height: 1.6;
+        color: #4d5666;
+        margin-top: 12px;
+      }
+      #foot .cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px 12px;
+        margin-top: 22px;
+      }
+      #foot h5 {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      #foot li {
+        list-style: none;
+        font-size: 12.5px;
+        color: #4d5666;
+        margin-top: 9px;
+      }
+      #foot hr {
+        border: 0;
+        border-top: 1px solid #e6e9f0;
+        margin: 22px 0 14px;
+      }
+      #foot .cp {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11.5px;
+        color: #4d5666;
+      }
+
+      #cap {
+        position: absolute;
+        left: 50%;
+        bottom: 250px;
+        transform: translateX(-50%);
+        background: rgba(8, 12, 26, 0.9);
+        color: #fff;
+        font-size: 34px;
+        font-weight: 500;
+        padding: 14px 34px;
+        border-radius: 999px;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.2s;
+        z-index: 20;
+        line-height: 1.3;
+      }
+      #ov0 {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(5, 8, 18, 0.94);
+        color: #fff;
+        text-align: center;
+      }
+      #ov0 .bx {
+        max-width: 640px;
+        padding: 0 24px;
+      }
+      #ov0 h2 {
+        font-size: 38px;
+        margin: 0 0 10px;
+        color: #fff;
+      }
+      #ov0 p {
+        color: #b8c0d9;
+        font-size: 17px;
+        line-height: 1.6;
+        margin-top: 10px;
+      }
+      #ov0 button {
+        margin-top: 28px;
+        font: inherit;
+        font-size: 20px;
+        font-weight: 600;
+        padding: 14px 46px;
+        border: 0;
+        border-radius: 12px;
+        background: #2f7bff;
+        color: #fff;
+        cursor: pointer;
+      }
+      #ov0 kbd {
+        background: #1c2540;
+        border-radius: 6px;
+        padding: 2px 8px;
+        font: inherit;
+        font-size: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="fit">
+      <div id="stage">
+        <div class="slide intro vis" id="intro">
+          <div class="w">Rifline</div>
+          <div class="tg">Le réseau social où chacun s'exprime</div>
+          <div class="sb">Site public</div>
+        </div>
+        <div class="slide" id="sl">
+          <div class="phone" id="phone">
+            <div class="scr">
+              <div class="sbar">
+                <span>9:41</span><span class="r" id="sicons"></span>
+              </div>
+              <div class="isl"></div>
+
+              <!-- Google -->
+              <div class="gl" id="gl">
+                <div class="g0">
+                  <div class="glogo">
+                    <span style="color: #4285f4">G</span
+                    ><span style="color: #ea4335">o</span
+                    ><span style="color: #fbbc05">o</span
+                    ><span style="color: #4285f4">g</span
+                    ><span style="color: #34a853">l</span
+                    ><span style="color: #ea4335">e</span>
+                  </div>
+                  <div class="pill" id="pill" style="top: 340px">
+                    <span id="ic-s"></span
+                    ><span class="tx"
+                      ><span id="tx"></span><i class="caret"></i></span
+                    ><span id="ic-m"></span>
+                  </div>
+                </div>
+                <div class="g1">
+                  <div class="top">
+                    <span
+                      style="
+                        font-size: 24px;
+                        font-weight: 500;
+                        letter-spacing: -1px;
+                      "
+                      ><span style="color: #4285f4">G</span
+                      ><span style="color: #ea4335">o</span
+                      ><span style="color: #fbbc05">o</span
+                      ><span style="color: #4285f4">g</span
+                      ><span style="color: #34a853">l</span
+                      ><span style="color: #ea4335">e</span></span
+                    >
+                    <div class="pill">
+                      <span class="tx">Rifline</span><span id="ic-x"></span>
+                    </div>
+                  </div>
+                  <div class="res1">
+                    <div class="fav">
+                      <div class="ic"><i></i></div>
+                      <div>
+                        <b>elanrif.com</b
+                        ><small>https://rifline.elanrif.com</small>
+                      </div>
+                    </div>
+                    <span class="rt" id="rt"
+                      >Rifline – Le réseau social où chacun s'exprime</span
+                    >
+                    <p class="rs">
+                      <b
+                        >Rifline est un réseau social où vous partagez vos
+                        idées, photos et vidéos</b
+                      >, échangez en commentaires et suivez la communauté.
+                    </p>
+                    <div class="ai"><span id="ic-ai"></span>AI Overview</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Site -->
+              <div class="site" id="site">
+                <div class="hdr">
+                  <div class="logo" id="ic-logo"></div>
+                  <span class="nm">Rifline</span>
+                  <div class="hb" id="ic-moon"></div>
+                  <div class="hb av" id="ic-user"></div>
+                </div>
+                <div class="page" id="page">
+                  <section id="hero">
+                    <span class="tag"
+                      ><i></i>Le réseau social où chacun s'exprime</span
+                    >
+                    <h1>Prenez<br />la parole.<br /><em>Partagez plus.</em></h1>
+                    <p class="hp">
+                      Publiez vos idées, photos et vidéos, échangez en
+                      commentaires et suivez une communauté qui vous ressemble.
+                    </p>
+                    <div class="hbtn">
+                      <div class="b1">Créer mon compte</div>
+                      <div class="b2">Voir les publications</div>
+                    </div>
+                    <div class="mem">
+                      <div class="stk">
+                        <i style="background: #2563ff">AI</i
+                        ><i style="background: #0f8a6a">HA</i
+                        ><i style="background: #7c3aed">MA</i
+                        ><i style="background: #e5173f">EL</i>
+                      </div>
+                      Rejoignez les premiers membres de Rifline
+                    </div>
+                    <div class="hcards">
+                      <div
+                        class="chip"
+                        style="
+                          margin-left: 14px;
+                          margin-bottom: -12px;
+                          transform: rotate(-1.5deg);
+                        "
+                      >
+                        <span
+                          class="ci"
+                          style="background: #ffe3e8"
+                          data-i="heart"
+                        ></span>
+                        <div>
+                          <b>Aicha a aimé votre publication</b
+                          ><small>il y a 12 min</small>
+                        </div>
+                      </div>
+                      <div class="card">
+                        <div class="ph">
+                          <span class="av" style="background: #e5173f">Ha</span>
+                          <div><b>Hafsa</b><small>il y a 3 h</small></div>
+                        </div>
+                        <p class="pt">
+                          Chaque idée partagée est un pas vers la réussite.
+                          Croyez en vous et continuez d'avancer !
+                        </p>
+                        <div class="pf">
+                          <span class="h" data-i="heartf">128</span
+                          ><span data-i="msg">24</span><span data-i="bm"></span>
+                        </div>
+                      </div>
+                      <div
+                        class="chip"
+                        style="
+                          margin: -10px 0 14px auto;
+                          transform: rotate(1.5deg);
+                        "
+                      >
+                        <span
+                          class="ci"
+                          style="background: #e4ecff"
+                          data-i="msgb"
+                        ></span>
+                        <div>
+                          <b>Manar a commenté votre publication</b
+                          ><small>il y a 2 min</small>
+                        </div>
+                      </div>
+                      <div class="card">
+                        <div class="ph">
+                          <span class="av" style="background: #0f8a6a">KB</span>
+                          <div>
+                            <b>ELanrif SB.</b><small>à l'instant</small>
+                          </div>
+                        </div>
+                        <div class="vid">
+                          <span class="pl" data-i="play"></span><em>0:42</em>
+                        </div>
+                        <p class="pt">
+                          Sur Rifline, retrouvez vos publications, découvrez de
+                          nouveaux points de vue et partagez vos passions avec
+                          une communauté qui vous ressemble.
+                        </p>
+                        <div class="pf">
+                          <span class="h" data-i="heartf">56</span
+                          ><span data-i="msg">12</span>
+                        </div>
+                      </div>
+                      <div
+                        class="chip"
+                        style="margin: -12px 0 0 40px; transform: rotate(-1deg)"
+                      >
+                        <span
+                          class="ci"
+                          style="background: #ffeacc"
+                          data-i="bmo"
+                        ></span>
+                        <div>
+                          <b>Kaoutar a enregistré votre publication</b
+                          ><small>il y a 12 min</small>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <section class="s" id="une">
+                    <div class="eb">À la une</div>
+                    <h2>Ce que la communauté publie</h2>
+                    <span class="vp">Voir plus →</span>
+                    <div class="big bigpost">
+                      <svg
+                        class="q"
+                        width="64"
+                        height="64"
+                        viewBox="0 0 24 24"
+                        fill="#fff"
+                      >
+                        <path
+                          d="M3 21c0-6 2-11 7-13l1 2c-3 1.5-4 4-4 6h4v6H3zm10 0c0-6 2-11 7-13l1 2c-3 1.5-4 4-4 6h4v6h-8z"
+                        />
+                      </svg>
+                      <div class="circ"></div>
+                      <p>
+                        Un père et son fils ont 36 ans à eux deux. Le père a 30
+                        ans de plus que son fils. Quel âge a le fils ?
+                      </p>
+                      <div class="au">
+                        <span
+                          class="av"
+                          style="background: #fff; color: #1648e8"
+                          >ÂM</span
+                        >
+                        <div><b>Âmmââ___râât</b><small>il y a 3 j</small></div>
+                        <div class="pls">
+                          <span data-i="heartw">0</span
+                          ><span data-i="msgw">2</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="sm smallposts">
+                      <div class="card">
+                        <div class="ph">
+                          <span class="av" style="background: #0f8a6a">WS</span>
+                          <div><b>Wika Satrou</b><small>3 oct.</small></div>
+                        </div>
+                        <p class="pt" style="margin-top: 12px">
+                          Le soleil bien plus qu'une lumière. Il nous offre
+                          chaleur,énergie et vie, sans jamais demander quoi que
+                          ce soit en retour.
+                          <span
+                            style="
+                              display: inline-block;
+                              width: 13px;
+                              height: 13px;
+                              border-radius: 50%;
+                              background: #f5a623;
+                              vertical-align: -2px;
+                            "
+                          ></span>
+                        </p>
+                        <div class="pf" style="margin-top: 30px">
+                          <span class="lk r" data-i="heartf">1</span
+                          ><span class="lk" data-i="msg">1</span>
+                        </div>
+                      </div>
+                      <div class="card">
+                        <div class="ph">
+                          <span class="av" style="background: #334155">NA</span>
+                          <div><b>Nayam</b><small>2 oct.</small></div>
+                        </div>
+                        <p class="pt" style="margin-top: 12px">
+                          Parfois, il suffit de prendre un instant pour observer
+                          le monde différemment. Les choses les plus simples
+                          peuvent cacher de grandes histoires, et chaque moment
+                          peut devenir un souvenir…
+                        </p>
+                        <div class="pf">
+                          <span class="lk r" data-i="heartf">1</span
+                          ><span class="lk" data-i="msg">0</span>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <section class="s" id="how">
+                    <h2 style="margin-top: 0">Comment ça marche ?</h2>
+                    <p class="sub2">Trois étapes, et vous êtes en ligne.</p>
+                    <div class="steps">
+                      <div class="stp st1">
+                        <div class="num">
+                          <i style="background: #1d4fe8">1</i><u></u>
+                        </div>
+                        <div class="sc">
+                          <div class="top" style="background: #dbe7ff">
+                            <div class="mk">
+                              <div class="inp">
+                                <span data-i="mail"></span>vous@email.com
+                              </div>
+                              <div class="row2">
+                                <span class="pb">S'inscrire</span
+                                ><span class="ok">✓ Vérifié</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="bt">
+                            <h3>Créez votre compte</h3>
+                            <p>
+                              Une minute suffit. Vérifiez votre email et vous
+                              êtes prêt.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="stp st2">
+                        <div class="num">
+                          <i style="background: #5b3df5">2</i><u></u>
+                        </div>
+                        <div class="sc">
+                          <div class="top" style="background: #e2e4ff">
+                            <div class="mk">
+                              Quoi de neuf aujourd'hui ?
+                              <div
+                                style="
+                                  border-top: 1px solid #eceef3;
+                                  margin-top: 10px;
+                                "
+                              ></div>
+                              <div class="row2">
+                                <span style="display: flex; gap: 8px"
+                                  ><span class="lk" data-i="img"></span
+                                  ><span class="lk" data-i="vidi"></span></span
+                                ><span class="pb">Publier</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="bt">
+                            <h3>Publiez</h3>
+                            <p>
+                              Un texte, une photo ou une vidéo : partagez ce qui
+                              compte pour vous.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="stp st3">
+                        <div class="num">
+                          <i style="background: #e5173f">3</i><u></u>
+                        </div>
+                        <div class="sc">
+                          <div class="top" style="background: #ffe1e4">
+                            <div class="mk">
+                              <div
+                                style="
+                                  display: flex;
+                                  gap: 10px;
+                                  align-items: center;
+                                "
+                              >
+                                <span
+                                  class="av"
+                                  style="
+                                    background: #0f8a6a;
+                                    width: 28px;
+                                    height: 28px;
+                                    font-size: 9px;
+                                  "
+                                  >AK</span
+                                ><span style="flex: 1"
+                                  ><i
+                                    style="
+                                      display: block;
+                                      height: 6px;
+                                      border-radius: 3px;
+                                      background: #e5e8ee;
+                                    "
+                                  ></i
+                                  ><i
+                                    style="
+                                      display: block;
+                                      height: 6px;
+                                      width: 60%;
+                                      border-radius: 3px;
+                                      background: #e5e8ee;
+                                      margin-top: 6px;
+                                    "
+                                  ></i
+                                ></span>
+                              </div>
+                              <div
+                                style="
+                                  display: flex;
+                                  gap: 7px;
+                                  margin-top: 12px;
+                                "
+                              >
+                                <span class="lk r" data-i="heartf">24</span
+                                ><span class="lk" data-i="msg">8</span
+                                ><span
+                                  class="lk"
+                                  style="background: #ece4ff; color: #6d28d9"
+                                  data-i="bmp"
+                                  >Enregistré</span
+                                >
+                              </div>
+                            </div>
+                          </div>
+                          <div class="bt">
+                            <h3>Échangez</h3>
+                            <p>
+                              Commentez, aimez et enregistrez les publications
+                              des autres.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <section class="s" id="feat">
+                    <div class="eb">Fonctionnalités</div>
+                    <h2>Tout pour vous exprimer</h2>
+                    <div class="fgrid">
+                      <div class="fc" style="background: #dbe7ff">
+                        <div class="fi" data-i="film"></div>
+                        <h4 style="color: #1a2f7a">Textes, photos, vidéos</h4>
+                        <p>
+                          Un seul espace pour écrire, illustrer et filmer vos
+                          publications.
+                        </p>
+                      </div>
+                      <div class="fc" style="background: #d2f7e6">
+                        <div class="fi" data-i="msgg"></div>
+                        <h4 style="color: #0b5b3f">Commentaires</h4>
+                        <p>
+                          Répondez, discutez et donnez votre avis sous chaque
+                          publication.
+                        </p>
+                      </div>
+                      <div class="fc" style="background: #ffe0e2">
+                        <div class="fi" data-i="heart"></div>
+                        <h4 style="color: #7a0f2c">J'aime</h4>
+                        <p>
+                          Un geste simple pour encourager ceux que vous suivez.
+                        </p>
+                      </div>
+                      <div class="fc" style="background: #ebe4ff">
+                        <div class="fi" data-i="bmp"></div>
+                        <h4 style="color: #3f1a8a">Favoris</h4>
+                        <p>
+                          Gardez de côté les publications que vous voulez
+                          retrouver.
+                        </p>
+                      </div>
+                    </div>
+                  </section>
+                  <section id="stats">
+                    <h2>Une communauté qui s'anime</h2>
+                    <div class="nums">
+                      <div><b>7</b><span>publications</span></div>
+                      <div>
+                        <b style="color: #ff4d6d">7</b><span>j'aime</span>
+                      </div>
+                      <div><b>4</b><span>commentaires</span></div>
+                    </div>
+                  </section>
+                  <section id="cta">
+                    <div class="cc">
+                      <h2>Votre voix compte.</h2>
+                      <p>
+                        Rejoignez Rifline et faites-vous entendre dès
+                        aujourd'hui.
+                      </p>
+                      <span class="ctab">Rejoignez Rifline</span>
+                    </div>
+                  </section>
+                  <footer id="foot">
+                    <div class="fl">
+                      <div class="logo" data-i="logo"></div>
+                      Rifline
+                    </div>
+                    <p class="d">
+                      Le réseau social où chacun s'exprime. Publiez, commentez
+                      et retrouvez une communauté qui échange.
+                    </p>
+                    <div
+                      class="b1"
+                      style="margin-top: 18px; height: 42px; max-width: 180px"
+                    >
+                      Créer mon compte
+                    </div>
+                    <div class="cols">
+                      <div>
+                        <h5>Découvrir</h5>
+                        <ul>
+                          <li>Publications</li>
+                          <li>Comment ça marche</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5>Compte</h5>
+                        <ul>
+                          <li>Se connecter</li>
+                          <li>Créer un compte</li>
+                          <li>Mot de passe oublié</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5>Informations</h5>
+                        <ul>
+                          <li>Conditions d'utilisation</li>
+                          <li>Politique de confidentialité</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <hr />
+                    <div class="cp">
+                      <span>© 2026 Rifline. Tous droits réservés.</span
+                      ><span>Prenez la parole.</span>
+                    </div>
+                  </footer>
+                </div>
+              </div>
+            </div>
+            <div class="cur" id="cur"><i></i></div>
+          </div>
+        </div>
+        <div id="cap"></div>
+      </div>
+    </div>
+    <div id="ov0">
+      <div class="bx">
+        <h2>Rifline – Site public</h2>
+        <p>
+          Maquette animée mobile 9:16 (1080×1920). Durée : <b id="dur">–</b>.
+        </p>
+        <p>
+          Lancez d'abord l'enregistrement (OBS, capture d'écran de l'OS), puis
+          cliquez sur « Lancer ». Coupez 1 à 2 s au début au montage.
+        </p>
+        <button id="go">Lancer</button>
+        <p style="margin-top: 22px">
+          <kbd>Espace</kbd> pause · <kbd>R</kbd> recommencer ·
+          <kbd>F</kbd> plein écran · <kbd>Échap</kbd> quitter
+        </p>
+      </div>
+    </div>
+    <script>
+      const $ = (s, r = document) => r.querySelector(s),
+        PW = 664;
+      const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+      const S = (p, s = 16, c = "currentColor", f = "none", w = 2) =>
+        `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="${f}" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+      const IC = {
+        heart: S(
+          '<path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/>',
+          16,
+          "#e5173f",
+          "#e5173f",
+        ),
+        heartf: S(
+          '<path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/>',
+          14,
+          "#e5173f",
+          "#e5173f",
+        ),
+        heartw: S(
+          '<path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/>',
+          13,
+          "#fff",
+          "#fff",
+        ),
+        msg: S(
+          '<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/>',
+          14,
+        ),
+        msgw: S(
+          '<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/>',
+          13,
+          "#fff",
+        ),
+        msgb: S(
+          '<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/>',
+          16,
+          "#2563ff",
+        ),
+        msgg: S(
+          '<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/>',
+          18,
+          "#0b8a4a",
+        ),
+        bm: S('<path d="M6 3h12v18l-6-4-6 4z"/>', 14, "#6b7280"),
+        bmo: S('<path d="M6 3h12v18l-6-4-6 4z"/>', 15, "#f59e0b", "#f59e0b"),
+        bmp: S('<path d="M6 3h12v18l-6-4-6 4z"/>', 14, "#6d28d9", "#6d28d9"),
+        play: S('<path d="M8 5v14l11-7z"/>', 20, "#1d4fe8", "#1d4fe8"),
+        mail: S(
+          '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="m3 8 9 6 9-6"/>',
+          15,
+          "#8b94a5",
+        ),
+        img: S(
+          '<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m4 18 5-5 4 4 3-3 4 4"/>',
+          14,
+          "#4b5563",
+        ),
+        vidi: S(
+          '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/>',
+          14,
+          "#4b5563",
+        ),
+        film: S(
+          '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 12h4M3 16h4M17 8h4M17 12h4M17 16h4"/>',
+          18,
+          "#1d4fe8",
+        ),
+        logo: S(
+          '<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/>',
+          17,
+          "#fff",
+        ),
+        moon: S('<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>', 17),
+        user: S(
+          '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+          19,
+          "#fff",
+        ),
+        search: S(
+          '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+          20,
+          "#5f6368",
+        ),
+        x: S('<path d="M18 6 6 18M6 6l12 12"/>', 20, "#5f6368"),
+        mic: S(
+          '<rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+          20,
+          "#4285f4",
+        ),
+        star: S(
+          '<path d="M12 2c.6 5.4 4.6 9.4 10 10-5.4.6-9.4 4.6-10 10-.6-5.4-4.6-9.4-10-10 5.4-.6 9.4-4.6 10-10z"/>',
+          20,
+          "#4285f4",
+          "#4285f4",
+          0,
+        ),
+      };
+      document.querySelectorAll("[data-i]").forEach((e) => {
+        e.insertAdjacentHTML("afterbegin", IC[e.dataset.i] || "");
+        if (e.matches(".pf span,.lk,.pls span")) e.style.gap = "5px";
+      });
+      $("#ic-logo").innerHTML = IC.logo;
+      $("#ic-moon").innerHTML = IC.moon;
+      $("#ic-user").innerHTML = IC.user;
+      $("#ic-s").innerHTML = IC.search;
+      $("#ic-m").innerHTML = IC.mic;
+      $("#ic-x").innerHTML = IC.x;
+      $("#ic-ai").innerHTML = IC.star;
+      $("#sicons").innerHTML =
+        '<svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><rect y="8" width="3" height="4" rx="1"/><rect x="4.7" y="5.5" width="3" height="6.5" rx="1"/><rect x="9.4" y="3" width="3" height="9" rx="1"/><rect x="14" width="3" height="12" rx="1"/></svg><svg width="16" height="12" viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M2 6.5a15 15 0 0 1 20 0M6 11a9 9 0 0 1 12 0"/><circle cx="12" cy="15.5" r="1.4" fill="currentColor"/></svg><svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x=".6" y=".6" width="21.8" height="10.8" rx="3.4" stroke="currentColor" opacity=".5"/><rect x="2" y="2" width="17" height="8" rx="2" fill="currentColor"/><rect x="23.4" y="4" width="1.8" height="4" rx=".9" fill="currentColor" opacity=".5"/></svg>';
+
+      /* ---------- storyboard : [sélecteur, alignement (px CSS depuis le haut de l'écran), légende] ---------- */
+      const GL = 8.0;
+      const SC = [
+        {
+          id: "hero",
+          steps: [
+            ["#hero", 0, "Page d'accueil de Rifline"],
+            ["h1", 130, "Prenez la parole. Partagez plus."],
+            [".hbtn", 300, "Créer mon compte ou voir les publications"],
+            [".hcards", 130, "Notifications : likes, commentaires, partages"],
+          ],
+        },
+        {
+          id: "une",
+          steps: [
+            ["#une", 100, "Section « À la une »"],
+            [".bigpost", 130, "Publication mise en avant"],
+            [".smallposts", 130, "Les autres publications récentes"],
+          ],
+        },
+        {
+          id: "how",
+          steps: [
+            ["#how", 100, "Comment ça marche ?"],
+            [".st1", 130, "Étape 1 : créez votre compte"],
+            [".st2", 130, "Étape 2 : publiez"],
+            [".st3", 130, "Étape 3 : échangez"],
+          ],
+        },
+        {
+          id: "feat",
+          steps: [
+            ["#feat", 100, "Fonctionnalités et statistiques"],
+            [".fgrid", 150, "Textes, commentaires, J'aime et favoris"],
+            ["#stats", 200, "Une communauté qui s'anime"],
+          ],
+        },
+        {
+          id: "cta",
+          steps: [
+            ["#cta", 150, "Appel à l'action et pied de page"],
+            [".ctab", 300, "Votre voix compte : rejoignez Rifline"],
+            ["#foot", 110, "Liens utiles et pied de page"],
+          ],
+        },
+      ];
+      const ST = 2.5,
+        INTRO_T = 2.5;
+      let T0 = INTRO_T + GL;
+      SC.forEach((s) => {
+        s.t0 = T0;
+        s.L = ST * s.steps.length + 1;
+        T0 += s.L;
+      });
+      const END = T0;
+      {
+        const m = Math.floor(END / 60),
+          r = Math.round(END % 60);
+        $("#dur").textContent = (m ? m + " min " : "") + r + " s";
+      }
+
+      const cap = $("#cap"),
+        intro = $("#intro"),
+        sl = $("#sl"),
+        page = $("#page"),
+        cur = $("#cur"),
+        phone = $("#phone");
+      let capV = 0;
+      function say(t) {
+        const v = ++capV;
+        cap.style.opacity = 0;
+        setTimeout(() => {
+          if (v !== capV) return;
+          cap.textContent = t;
+          cap.style.opacity = 1;
+        }, 200);
+      }
+      function hideCap() {
+        ++capV;
+        cap.style.opacity = 0;
+      }
+      function scrollTo(sel, al) {
+        const el = $(sel, page),
+          max = page.offsetHeight - 844;
+        page.style.transform = `translateY(${-clamp(el.offsetTop + (el.offsetParent && el.offsetParent !== page ? el.offsetParent.offsetTop : 0) - al, 0, max)}px)`;
+      }
+      function pos(el) {
+        const t = el.getBoundingClientRect(),
+          w = phone.getBoundingClientRect(),
+          k = PW / w.width;
+        return {
+          x: (t.left + t.width * 0.5 - w.left) * k,
+          y: (t.top + t.height * 0.5 - w.top) * k,
+        };
+      }
+      function fingerTo(el) {
+        const p = pos(el);
+        cur.style.opacity = 1;
+        cur.style.transform = `translate(${p.x - 22}px,${p.y - 22}px)`;
+      }
+      function tap(el) {
+        const p = pos(el),
+          r = document.createElement("i");
+        r.className = "rip";
+        r.style.left = p.x + "px";
+        r.style.top = p.y + "px";
+        phone.appendChild(r);
+        setTimeout(() => r.remove(), 700);
+      }
+
+      let cues = [],
+        ci = 0,
+        now = 0,
+        running = false,
+        paused = false,
+        last = 0;
+      function build() {
+        cues = [];
+        const g0 = INTRO_T,
+          c = (t, f) => cues.push([t, f]),
+          tx = $("#tx"),
+          gl = $("#gl"),
+          pill = $("#pill");
+        c(g0, () => sl.classList.add("vis"));
+        c(g0 + 0.3, () => say("Recherche Google : « Rifline »"));
+        c(g0 + 1.0, () => fingerTo(pill));
+        c(g0 + 1.9, () => {
+          tap(pill);
+          pill.classList.add("f");
+          say("Saisie de « Rifline »");
+        });
+        [..."Rifline"].forEach((_, n) =>
+          c(g0 + 2.4 + n * 0.12, () => {
+            tx.textContent = "Rifline".slice(0, n + 1);
+          }),
+        );
+        c(g0 + 3.6, () => gl.classList.add("res"));
+        c(g0 + 3.9, () => say("Premier résultat : le site Rifline"));
+        c(g0 + 6.0, () => {
+          say("Clic sur le résultat");
+          fingerTo($("#rt"));
+        });
+        c(g0 + 6.9, () => {
+          tap($("#rt"));
+          $("#rt").classList.add("hl");
+        });
+        c(g0 + 7.0, () => {
+          gl.classList.add("off");
+          $("#site").classList.add("on");
+          cur.style.opacity = 0;
+          hideCap();
+        });
+        SC.forEach((s) => {
+          s.steps.forEach(([sel, al, t], k) =>
+            c(s.t0 + 0.3 + ST * k, () => {
+              scrollTo(sel, al);
+              say(t);
+            }),
+          );
+          c(s.t0 + 0.3 + ST * s.steps.length, () => hideCap());
+        });
+        c(INTRO_T, () => {
+          intro.classList.remove("vis");
+          intro.classList.add("out");
+        });
+        [0.15, 0.55, 0.95].forEach((t, i) =>
+          c(t, () => intro.children[i].classList.add("on")),
+        );
+        cues.sort((a, b) => a[0] - b[0]);
+      }
+      function reset() {
+        hideCap();
+        ci = 0;
+        [intro, sl].forEach((e) => {
+          e.style.transition = "none";
+          e.className = "slide" + (e === intro ? " intro vis" : "");
+          void e.offsetWidth;
+          e.style.transition = "";
+        });
+        [...intro.children].forEach((e) => e.classList.remove("on"));
+        page.style.transition = "none";
+        page.style.transform = "";
+        void page.offsetWidth;
+        page.style.transition = "";
+        $("#gl").classList.remove("res", "off");
+        $("#site").classList.remove("on");
+        $("#pill").classList.remove("f");
+        $("#rt").classList.remove("hl");
+        $("#tx").textContent = "";
+        cur.style.transition = "none";
+        cur.style.opacity = 0;
+        cur.style.transform = "translate(500px,1100px)";
+        void cur.offsetWidth;
+        cur.style.transition = "";
+        phone.querySelectorAll(".rip").forEach((e) => e.remove());
+      }
+      function tick() {
+        while (ci < cues.length && cues[ci][0] <= now) {
+          cues[ci][1]();
+          ci++;
+        }
+      }
+      function frame(ts) {
+        if (!running) return;
+        const dt = last ? Math.min(0.25, (ts - last) / 1000) : 0;
+        last = ts;
+        if (!paused) now += dt;
+        tick();
+        if (now >= END) {
+          tick();
+          running = false;
+          hideCap();
+          return;
+        }
+        requestAnimationFrame(frame);
+      }
+      function start() {
+        build();
+        reset();
+        now = 0;
+        paused = false;
+        last = 0;
+        document.body.classList.add("rec");
+        $("#ov0").style.display = "none";
+        if (!running) {
+          running = true;
+          requestAnimationFrame(frame);
+        } else {
+          last = 0;
+        }
+      }
+      function stop() {
+        running = false;
+        paused = false;
+        reset();
+        now = 0;
+        document.body.classList.remove("rec");
+        $("#ov0").style.display = "flex";
+        if (document.fullscreenElement) document.exitFullscreen();
+      }
+      function fit() {
+        const k = Math.min(innerWidth / 1080, innerHeight / 1920);
+        $("#fit").style.transform =
+          `translate(${-540 * k}px,${-960 * k}px) scale(${k})`;
+      }
+      addEventListener("resize", fit);
+      fit();
+      $("#go").onclick = () =>
+        (document.fonts && document.fonts.ready
+          ? document.fonts.ready
+          : Promise.resolve()
+        ).then(start);
+      addEventListener("keydown", (e) => {
+        if (e.code === "Space") {
+          e.preventDefault();
+          if (running) paused = !paused;
+        } else if (e.key === "r" || e.key === "R") {
+          if ($("#ov0").style.display === "none") start();
+        } else if (e.key === "f" || e.key === "F") {
+          document.fullscreenElement
+            ? document.exitFullscreen()
+            : document.documentElement.requestFullscreen();
+        } else if (e.key === "Escape") {
+          if (!document.fullscreenElement) stop();
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1566 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Rifline – Présentation authentification (desktop)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --blue: #2f7bff;
+        --ink: #1a2236;
+        --moon: #4a5bff;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #04060b;
+        font-family:
+          "Outfit",
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          "Helvetica Neue",
+          Arial,
+          sans-serif;
+      }
+      body.rec {
+        cursor: none;
+      }
+      #fit {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 1920px;
+        height: 1080px;
+        transform-origin: 0 0;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background: radial-gradient(
+          1300px 900px at 16% 10%,
+          #2f58e6 0%,
+          #1b2c74 46%,
+          #0a1130 100%
+        );
+      }
+      #stage::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          900px 600px at 90% 100%,
+          rgba(74, 91, 255, 0.35),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      /* diapos */
+      .slide {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transform: translateX(90px) scale(0.95);
+        z-index: 2;
+      }
+      .slide.vis {
+        opacity: 1;
+        transform: none;
+        transition:
+          opacity 0.9s cubic-bezier(0.65, 0, 0.35, 1),
+          transform 1.1s cubic-bezier(0.65, 0, 0.35, 1);
+      }
+      .slide.out {
+        opacity: 0;
+        transform: translateX(-90px) scale(0.95);
+        transition:
+          opacity 0.9s cubic-bezier(0.65, 0, 0.35, 1),
+          transform 1.1s cubic-bezier(0.65, 0, 0.35, 1);
+      }
+
+      /* intro */
+      .intro {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        text-align: center;
+      }
+      .intro .w {
+        font-size: 150px;
+        font-weight: 600;
+        letter-spacing: -3px;
+        line-height: 1;
+      }
+      .intro .tg {
+        font-size: 44px;
+        font-weight: 400;
+        color: #d5ddff;
+        margin-top: 22px;
+      }
+      .intro .sb {
+        margin-top: 46px;
+        font-size: 28px;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        padding: 12px 30px;
+        border: 2px solid rgba(255, 255, 255, 0.45);
+        border-radius: 999px;
+        color: #fff;
+      }
+      .intro .w,
+      .intro .tg,
+      .intro .sb {
+        opacity: 0;
+        transform: translateY(16px);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+      }
+      .intro .on {
+        opacity: 1;
+        transform: none;
+      }
+
+      /* fenêtre navigateur */
+      .win {
+        position: absolute;
+        left: 140px;
+        top: 82px;
+        width: 1640px;
+        height: 884px;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow:
+          0 50px 120px rgba(0, 0, 0, 0.5),
+          0 14px 34px rgba(0, 0, 0, 0.28);
+        transform-origin: 50% 50%;
+        transition-property: transform;
+        transition-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
+        transition-duration: 0s;
+      }
+      .bar {
+        height: 44px;
+        background: #eceef3;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        gap: 8px;
+      }
+      .bar i {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: block;
+      }
+      .bar .url {
+        margin-left: 18px;
+        height: 26px;
+        width: 420px;
+        border-radius: 13px;
+        background: #fff;
+        color: #6b7383;
+        font-size: 14px;
+        line-height: 26px;
+        padding: 0 14px;
+      }
+      .content {
+        position: absolute;
+        left: 0;
+        top: 44px;
+        width: 1640px;
+        height: 840px;
+        display: flex;
+        background: #fff;
+      }
+
+      /* curseur simulé */
+      .cur {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 30px;
+        height: 30px;
+        opacity: 0;
+        z-index: 60;
+        pointer-events: none;
+        filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.4));
+        transition: opacity 0.3s;
+      }
+      .rip {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        margin: -8px 0 0 -8px;
+        border-radius: 50%;
+        border: 3px solid rgba(47, 123, 255, 0.85);
+        z-index: 59;
+        pointer-events: none;
+        animation: rip 0.65s ease-out forwards;
+      }
+      @keyframes rip {
+        from {
+          transform: scale(0.6);
+          opacity: 1;
+        }
+        to {
+          transform: scale(4.2);
+          opacity: 0;
+        }
+      }
+
+      /* panneau gauche */
+      .L {
+        position: relative;
+        width: 780px;
+        flex: none;
+        background: #fff;
+        color: var(--ink);
+      }
+      .form {
+        position: relative;
+        margin-left: 84px;
+        width: 470px;
+      }
+      .form.w {
+        width: 620px;
+      }
+      .back {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 15px;
+        color: #2b3447;
+      }
+      h1 {
+        font-size: 53px;
+        font-weight: 600;
+        letter-spacing: -0.8px;
+        line-height: 1.1;
+        margin-top: 30px;
+        color: var(--ink);
+      }
+      h2 {
+        font-size: 29px;
+        font-weight: 600;
+        letter-spacing: -0.2px;
+        line-height: 1.2;
+        margin-top: 34px;
+        color: var(--ink);
+      }
+      .sub {
+        font-size: 21px;
+        line-height: 1.5;
+        color: #4d5666;
+        margin-top: 6px;
+      }
+      .sub.s {
+        font-size: 17px;
+        margin-top: 14px;
+      }
+      .soc {
+        display: flex;
+        gap: 22px;
+        margin-top: 40px;
+      }
+      .soc div {
+        flex: 1;
+        height: 46px;
+        border-radius: 10px;
+        background: #f1f3f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-size: 15px;
+        color: #27303f;
+      }
+      .or {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        margin-top: 30px;
+        color: #8b94a5;
+        font-size: 15px;
+      }
+      .or i {
+        flex: 1;
+        height: 1px;
+        background: #dfe3ea;
+        display: block;
+      }
+      .fld {
+        margin-top: 26px;
+      }
+      .fld.t {
+        margin-top: 20px;
+      }
+      label {
+        display: block;
+        font-size: 15px;
+        font-weight: 500;
+        color: #1f2738;
+        margin-bottom: 9px;
+      }
+      label b {
+        color: #e5484d;
+        font-weight: 500;
+      }
+      label small {
+        color: #8b94a5;
+        font-weight: 400;
+        font-size: 13px;
+      }
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      .in {
+        position: relative;
+        height: 47px;
+        border: 1px solid #d6dbe5;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        padding: 0 18px;
+        font-size: 15px;
+        color: var(--ink);
+        background: #fff;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        overflow: hidden;
+      }
+      .in.f {
+        border-color: #7fa9ff;
+        box-shadow: 0 0 0 3px rgba(47, 123, 255, 0.18);
+      }
+      .in .ph {
+        color: #9aa3b2;
+        white-space: nowrap;
+      }
+      .in .val {
+        filter: blur(5px);
+        white-space: nowrap;
+      }
+      .in.pw .val {
+        font-size: 17px;
+        letter-spacing: 1px;
+      }
+      .in .eye {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        margin-top: -9px;
+        color: #4b5563;
+      }
+      .in.tel {
+        padding: 0;
+      }
+      .in.tel .fl {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 14px;
+        height: 100%;
+        border-right: 1px solid #d6dbe5;
+        color: #4b5563;
+      }
+      .in.tel .pre {
+        padding: 0 6px 0 6px;
+        margin-left: 4px;
+        color: var(--ink);
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 26px;
+        font-size: 15px;
+      }
+      .rem {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .chk {
+        width: 23px;
+        height: 23px;
+        border: 1px solid #cfd5df;
+        border-radius: 6px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background: #fff;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+        flex: none;
+      }
+      .chk svg {
+        opacity: 0;
+      }
+      .chk.on {
+        background: var(--blue);
+        border-color: var(--blue);
+      }
+      .chk.on svg {
+        opacity: 1;
+      }
+      a,
+      .lk {
+        color: var(--blue);
+        text-decoration: none;
+      }
+      .btn {
+        height: 46px;
+        border-radius: 10px;
+        background: var(--blue);
+        color: #fff;
+        font-weight: 500;
+        font-size: 15px;
+        display: grid;
+        place-items: center;
+        margin-top: 30px;
+        transition:
+          transform 0.12s,
+          filter 0.12s;
+      }
+      .btn.press {
+        transform: scale(0.97);
+        filter: brightness(0.9);
+      }
+      .foot {
+        margin-top: 20px;
+        font-size: 15px;
+        color: #27303f;
+      }
+      .terms {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        margin-top: 16px;
+        font-size: 15px;
+        line-height: 1.55;
+        color: #4d5666;
+      }
+      .terms b {
+        font-weight: 500;
+        color: var(--ink);
+      }
+      .terms .chk {
+        margin-top: 2px;
+      }
+      .str {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 5px;
+        margin-top: 10px;
+      }
+      .str i {
+        height: 6px;
+        border-radius: 3px;
+        background: #e5e8ee;
+        display: block;
+        transition: background 0.2s;
+      }
+      .str i.on {
+        background: #16c35c;
+      }
+      .strl {
+        font-size: 13px;
+        color: #16c35c;
+        margin-top: 7px;
+        opacity: 0;
+        transition: opacity 0.25s;
+      }
+      .moon {
+        position: absolute;
+        left: 751px;
+        top: 20px;
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: var(--moon);
+        display: grid;
+        place-items: center;
+        color: #fff;
+        z-index: 5;
+      }
+
+      /* panneau droit (substitut stylisé de la photo) */
+      .R {
+        position: relative;
+        flex: 1;
+        overflow: hidden;
+        background: linear-gradient(
+          160deg,
+          #1a2033 0%,
+          #0b0f1c 62%,
+          #090c17 100%
+        );
+      }
+      .R .fing {
+        position: absolute;
+        left: 330px;
+        top: -80px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          #66403a 0,
+          #2c1d20 45%,
+          transparent 70%
+        );
+        filter: blur(14px);
+        opacity: 0.85;
+      }
+      .R .ph3 {
+        position: absolute;
+        left: 70px;
+        top: 300px;
+        width: 840px;
+        height: 360px;
+        border-radius: 30px;
+        background: linear-gradient(
+          120deg,
+          #8f9cb9 0%,
+          #cad2e3 35%,
+          #7e8eaf 70%
+        );
+        opacity: 0.5;
+        transform: perspective(800px) rotateX(58deg) rotateZ(-20deg);
+        filter: blur(3px);
+      }
+      .R .shade {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(9, 12, 22, 0.35),
+          rgba(9, 12, 22, 0.8)
+        );
+      }
+      .bub {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(150, 155, 172, 0.55);
+        color: #e9edf6;
+        border-radius: 12px;
+        padding: 8px 18px 8px 9px;
+        font-size: 34px;
+        font-weight: 500;
+        animation: fl 6s ease-in-out infinite;
+      }
+      .bub::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -12px;
+        margin-left: -12px;
+        border: 12px solid transparent;
+        border-top-color: rgba(150, 155, 172, 0.55);
+        border-bottom: 0;
+      }
+      .bub .ic {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #3d7cf0;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 26px;
+        font-weight: 600;
+        flex: none;
+      }
+      .bub .ic svg {
+        width: 24px;
+        height: 24px;
+      }
+      @keyframes fl {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-9px);
+        }
+      }
+      .rt {
+        position: absolute;
+        left: 36px;
+        right: 36px;
+        top: 322px;
+        text-align: center;
+      }
+      .rl {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.32em;
+        color: #b9bfcd;
+      }
+      .rt p {
+        margin-top: 24px;
+        font-size: 27px;
+        line-height: 1.66;
+        color: #fff;
+        font-weight: 400;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Gmail (reproduction) */
+      .content.gmc {
+        display: block;
+        background: #f6f8fc;
+      }
+      .gm {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1316px;
+        height: 674px;
+        transform: scale(1.2462);
+        transform-origin: 0 0;
+        background: #f6f8fc;
+        font-family: "Google Sans", Roboto, Arial, Helvetica, sans-serif;
+        color: #202124;
+      }
+      .gm .a {
+        position: absolute;
+      }
+      .gm .ic {
+        position: absolute;
+        color: #444746;
+        display: block;
+      }
+      .gm .main {
+        position: absolute;
+        left: 312px;
+        top: 78px;
+        right: 0;
+        bottom: 0;
+        background: #fff;
+        border-radius: 16px 0 0 0;
+      }
+      .gm .sr {
+        position: absolute;
+        left: 312px;
+        top: 8px;
+        width: 761px;
+        height: 60px;
+        border-radius: 30px;
+        background: #e9eef6;
+      }
+      .gm .sr span {
+        position: absolute;
+        left: 69px;
+        top: 0;
+        line-height: 60px;
+        font-size: 18px;
+        color: #444746;
+      }
+      .gm .cmp {
+        position: absolute;
+        left: 8px;
+        top: 88px;
+        width: 172px;
+        height: 70px;
+        border-radius: 18px;
+        background: #c2e7ff;
+      }
+      .gm .cmp span {
+        position: absolute;
+        left: 64px;
+        top: 0;
+        line-height: 70px;
+        font-size: 18px;
+        font-weight: 500;
+        color: #001d35;
+      }
+      .gm .nv {
+        position: absolute;
+        left: 8px;
+        width: 290px;
+        height: 40px;
+        border-radius: 0 20px 20px 0;
+        font-size: 17px;
+        line-height: 40px;
+        color: #202124;
+      }
+      .gm .nv.sel {
+        background: #d3e3fd;
+        font-weight: 700;
+      }
+      .gm .nv span {
+        position: absolute;
+        left: 64px;
+      }
+      .gm .nv em {
+        position: absolute;
+        right: 16px;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+      }
+      .gm .sbj {
+        left: 402px;
+        top: 162px;
+        font-size: 26px;
+        line-height: 38px;
+        color: #1f1f1f;
+        white-space: nowrap;
+      }
+      .gm .bd {
+        font-size: 14px;
+        line-height: 25px;
+        border-radius: 7px;
+        padding: 0 10px;
+        height: 25px;
+      }
+      .gm .sel1 {
+        position: absolute;
+        height: 55px;
+        border: 1px solid #c4c7c5;
+        border-radius: 8px;
+        background: #fff;
+        font-size: 17px;
+        line-height: 53px;
+        padding-left: 12px;
+      }
+      .gm .tb {
+        position: absolute;
+        left: 826px;
+        top: 279px;
+        width: 177px;
+        height: 55px;
+        border-radius: 6px;
+        background: #0a78ad;
+        color: #fff;
+        font-size: 17px;
+        line-height: 55px;
+        text-align: center;
+      }
+      .gm .txt {
+        position: absolute;
+        left: 402px;
+        font-size: 16px;
+        line-height: 24px;
+        color: #202124;
+        white-space: nowrap;
+      }
+      .gm .lnk {
+        color: #1155cc;
+        text-decoration: underline;
+        padding: 2px 3px;
+        border-radius: 4px;
+        margin-left: -3px;
+      }
+      .gm .lnk.press {
+        background: rgba(17, 85, 204, 0.16);
+        color: #0b3d91;
+      }
+      .gm .lnk .bl {
+        filter: blur(4.5px);
+        display: inline-block;
+      }
+
+      /* légende */
+      #cap {
+        position: absolute;
+        left: 50%;
+        bottom: 46px;
+        transform: translateX(-50%);
+        background: rgba(8, 12, 26, 0.9);
+        color: #fff;
+        font-size: 30px;
+        font-weight: 500;
+        padding: 12px 30px;
+        border-radius: 999px;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.2s;
+        z-index: 20;
+        line-height: 1.3;
+      }
+
+      /* écran d'attente */
+      #ov {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(5, 8, 18, 0.94);
+        color: #fff;
+        text-align: center;
+      }
+      #ov .bx {
+        max-width: 640px;
+        padding: 0 24px;
+      }
+      #ov h2 {
+        font-size: 38px;
+        margin: 0 0 10px;
+        color: #fff;
+      }
+      #ov p {
+        color: #b8c0d9;
+        font-size: 17px;
+        line-height: 1.6;
+        margin-top: 10px;
+      }
+      #ov button {
+        margin-top: 28px;
+        font: inherit;
+        font-size: 20px;
+        font-weight: 600;
+        padding: 14px 46px;
+        border: 0;
+        border-radius: 12px;
+        background: #2f7bff;
+        color: #fff;
+        cursor: pointer;
+      }
+      #ov kbd {
+        background: #1c2540;
+        border-radius: 6px;
+        padding: 2px 8px;
+        font: inherit;
+        font-size: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="fit">
+      <div id="stage"><div id="cap"></div></div>
+    </div>
+    <div id="ov">
+      <div class="bx">
+        <h2>Rifline – Authentification</h2>
+        <p>
+          Maquette animée desktop 16:9 (1920×1080). Durée : <b id="dur">–</b>.
+        </p>
+        <p>
+          Lancez d'abord l'enregistrement (OBS, capture d'écran de l'OS), puis
+          cliquez sur « Lancer ». Coupez 1 à 2 s au début au montage.
+        </p>
+        <button id="go">Lancer</button>
+        <p style="margin-top: 22px">
+          <kbd>Espace</kbd> pause · <kbd>R</kbd> recommencer ·
+          <kbd>F</kbd> plein écran · <kbd>Échap</kbd> quitter
+        </p>
+      </div>
+    </div>
+
+    <script>
+      const $ = (s, r = document) => r.querySelector(s);
+      const stage = $("#stage"),
+        cap = $("#cap");
+
+      /* ---------- icônes ---------- */
+      const S = (p, s = 18, w = 2) =>
+        `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+      const P = {
+        left: '<path d="m15 18-6-6 6-6"/>',
+        down: '<path d="m6 9 6 6 6-6"/>',
+        check: '<path d="M20 6 9 17l-5-5"/>',
+        eye: '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M2 2l20 20"/>',
+        moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+        arrL: '<path d="M19 12H5M12 19l-7-7 7-7"/>',
+        archive:
+          '<rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10h14V9M10 13h4"/>',
+        report: '<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/>',
+        trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5M14 11v5"/>',
+        mail: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="m3 8 9 6 9-6"/>',
+        clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+        taskp:
+          '<circle cx="11" cy="12" r="8"/><path d="m7.5 12 2.5 2.5 4.5-5M19 4v4M17 6h4"/>',
+        folder: '<path d="M3 6h7l2 2h9v11H3zM11 14h6m-2-2 2 2-2 2"/>',
+        tag: '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1"/>',
+        more: '<circle cx="12" cy="5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="19" r="1.4"/>',
+        search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+        sliders:
+          '<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+        star: '<path d="m12 3 2.8 5.8 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.3l1.1-6.2L3 9.7l6.2-.9z"/>',
+        send: '<path d="M3 11 21 3l-6 18-3-8z"/>',
+        file: '<path d="M6 3h8l4 4v14H6zM14 3v4h4"/>',
+        inbox: '<path d="M3 13l3-8h12l3 8v6H3zM3 13h5l1 2h6l1-2h5"/>',
+        bag: '<path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/>',
+        pencil: '<path d="M4 20l1-4L16 5l3 3L8 19z"/>',
+      };
+      const GG =
+        '<svg width="22" height="22" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>';
+      const XX =
+        '<svg width="22" height="22" viewBox="0 0 24 24" fill="#111"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>';
+      const FLAG =
+        '<svg width="28" height="20" viewBox="0 0 28 20"><rect width="28" height="20" rx="3" fill="#c1272d"/><path d="M14 5.2l1.5 4.6h4.8l-3.9 2.8 1.5 4.6-3.9-2.8-3.9 2.8 1.5-4.6-3.9-2.8h4.8z" fill="none" stroke="#0a6b3a" stroke-width="1.2"/></svg>';
+      const CUR =
+        '<svg viewBox="0 0 24 24" width="30" height="30"><path d="M4 2l15 9-6.5 1.6L9.5 19z" fill="#111" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>';
+
+      /* ---------- blocs communs ---------- */
+      const BUB = {
+        "#": "#",
+        u: '<svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg>',
+        c: '<svg viewBox="0 0 24 24" fill="#fff"><circle cx="7" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="17" cy="12" r="1.8"/></svg>',
+        t: '<svg viewBox="0 0 24 24" fill="#fff"><path d="M2 10h4v11H2zM8 21h9a2 2 0 0 0 2-1.6l1.4-7A2 2 0 0 0 18.4 10H14V5a2 2 0 0 0-2-2l-4 7z"/></svg>',
+      };
+      const RP = (bs) =>
+        `<div class="R"><div class="fing"></div><div class="ph3"></div><div class="shade"></div>${bs
+          .map(
+            ([k, n, l, t, o], i) =>
+              `<div class="bub" style="left:${l}px;top:${t}px;opacity:${o ?? 1};animation-delay:${-i * 1.3}s"><span class="ic">${BUB[k]}</span>${n}</div>`,
+          )
+          .join(
+            "",
+          )}<div class="rt"><div class="rl">RIFLINE – LE RÉSEAU SOCIAL OÙ CHACUN S'EXPRIME</div><p>Votre voix compte. Publiez vos idées, commentez celles des autres et retrouvez une communauté qui échange en temps réel, sans filtre.</p></div></div>`;
+      const MOON = `<div class="moon">${S(P.moon, 26)}</div>`;
+      const BACK = (t) =>
+        `<div class="back">${S(P.left, 16)}<span>${t}</span></div>`;
+      const INP = (n, ph, extra = "") =>
+        `<div class="in ${extra}" data-n="${n}"><span class="ph">${ph}</span><span class="val"></span>${extra.includes("pw") ? `<span class="eye">${S(P.eye, 18)}</span>` : ""}</div>`;
+      const win = (inner, cls = "") =>
+        `<div class="win"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="url">rifline.elanrif.com</span></div><div class="content ${cls}">${inner}</div><div class="cur">${CUR}</div></div>`;
+
+      /* ---------- pages ---------- */
+      const pageLogin = () =>
+        win(`
+<div class="L"><div class="form" style="padding-top:112px">
+  ${BACK("Retour à l'accueil")}
+  <h1>Prenez la parole.</h1>
+  <p class="sub">Ce qui se passe, maintenant. Connectez-vous pour publier, commenter et suivre votre communauté.</p>
+  <div class="soc"><div>${GG}<span>Google</span></div><div>${XX}<span>Twitter</span></div></div>
+  <div class="or"><i></i><span>Ou</span><i></i></div>
+  <div class="fld t"><label>Email <b>*</b></label>${INP("email", "Entrez votre adresse e-mail")}</div>
+  <div class="fld"><label>Mot de passe <b>*</b></label>${INP("pwd", "Entrez votre mot de passe", "pw")}</div>
+  <div class="row"><div class="rem"><span class="chk">${S(P.check, 15, 3)}</span>Se rappeler de moi</div><a>Mot de passe oublié?</a></div>
+  <div class="btn">Se connecter</div>
+  <p class="foot">Pas encore de compte? <a>S'inscrire</a></p>
+</div>${MOON}</div>
+${RP([
+  ["#", 131, 590, 118],
+  ["u", 1962, 535, 405, 0.35],
+  ["c", 14, 468, 552],
+  ["c", 713, 668, 540, 0.5],
+])}`);
+
+      const pageRegister = () =>
+        win(`
+<div class="L"><div class="form w" style="padding-top:40px">
+  ${BACK("Retour à l'accueil")}
+  <h1 style="margin-top:22px;font-size:46px">Rejoignez le mouvement.</h1>
+  <p class="sub">Créez votre compte pour publier, commenter et vous faire entendre.</p>
+  <div class="two fld" style="margin-top:24px">
+    <div><label>Nom <b>*</b></label>${INP("nom", "Entrez votre nom")}</div>
+    <div><label>Prénom <b>*</b></label>${INP("pre", "Entrez votre prénom")}</div>
+  </div>
+  <div class="two fld" style="margin-top:16px">
+    <div><label>Email <b>*</b></label>${INP("mail", "Entrez votre email")}</div>
+    <div><label>Téléphone <small>(facultatif)</small></label><div class="in tel" data-n="tel"><span class="fl">${FLAG}${S(P.down, 14)}</span><span class="pre">+212</span><span class="val"></span><span class="ph" style="display:none"></span></div></div>
+  </div>
+  <div class="fld" style="margin-top:16px"><label>Mot de passe <b>*</b></label>${INP("pwd", "Entrez votre mot de passe", "pw")}</div>
+  <div class="fld" style="margin-top:16px"><label>Confirmer le mot de passe <b>*</b></label>${INP("conf", "Confirmez votre mot de passe", "pw")}</div>
+  <div class="terms"><span class="chk">${S(P.check, 15, 3)}</span><span>En créant un compte, vous acceptez les <b>Conditions d'utilisation</b> et notre <b>Politique de confidentialité</b>.</span></div>
+  <div class="btn" style="margin-top:16px">S'inscrire</div>
+  <p class="foot" style="margin-top:12px">Déjà un compte? <a>Se connecter</a></p>
+</div>${MOON}</div>
+${RP([
+  ["u", 438, 510, 560],
+  ["t", 176, 430, 735, 0.45],
+])}`);
+
+      const pageForgot = () =>
+        win(`
+<div class="L"><div class="form" style="padding-top:262px">
+  ${BACK("Retour à la connexion")}
+  <h2>Mot de passe oublié ?</h2>
+  <p class="sub s">Saisissez votre email, nous vous enverrons un lien pour en choisir un nouveau.</p>
+  <div class="fld t" style="margin-top:16px"><label>Email <b>*</b></label>${INP("mail", "Entrez votre adresse e-mail")}</div>
+  <p style="margin-top:8px;font-size:15px"><a>Retour à la connexion?</a></p>
+  <div class="btn" style="margin-top:18px">Envoyer le lien</div>
+</div>${MOON}</div>
+${RP([
+  ["#", 141, 640, 100],
+  ["u", 2084, 500, 400, 0.3],
+  ["c", 16, 510, 560],
+  ["c", 756, 665, 520, 0.5],
+])}`);
+
+      const pageCheck = () =>
+        win(`
+<div class="L"><div class="form" style="padding-top:300px">
+  ${BACK("Retour à la connexion")}
+  <h2>Vérifiez votre boîte mail</h2>
+  <p class="sub s" style="margin-top:22px">Si un compte existe avec cet email, vous allez recevoir un lien de réinitialisation valable 30 minutes.</p>
+  <p style="margin-top:46px;font-size:17px"><a>Retour à la connexion</a></p>
+</div>${MOON}</div>
+${RP([
+  ["#", 64, 620, 300],
+  ["u", 1178, 540, 505],
+  ["c", 3, 520, 600],
+])}`);
+
+      const pageReset = () =>
+        win(`
+<div class="L"><div class="form" style="padding-top:250px">
+  ${BACK("Retour à la connexion")}
+  <h2>Nouveau mot de passe</h2>
+  <div class="fld t" style="margin-top:20px"><label>Nouveau mot de passe <b>*</b></label>${INP("np", "Nouveau mot de passe", "pw")}</div>
+  <div class="str"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="strl">Force du mot de passe : Très forte</div>
+  <div class="fld" style="margin-top:14px"><label>Confirmer le mot de passe <b>*</b></label>${INP("cp", "Confirmez votre mot de passe", "pw")}</div>
+  <div class="btn" style="margin-top:14px">Modifier le mot de passe</div>
+</div>${MOON}</div>
+${RP([
+  ["#", 51, 590, 330, 0.4],
+  ["u", 1027, 520, 510],
+  ["c", 0, 450, 615, 0.25],
+  ["c", 102, 650, 640, 0.6],
+  ["t", 383, 480, 740, 0.5],
+])}`);
+
+      const pageGmail = () =>
+        win(
+          `
+<div class="gm">
+  <svg class="a" style="left:20px;top:20px" width="40" height="30" viewBox="0 0 48 36"><path d="M2 34V9l9 7v18z" fill="#4285f4"/><path d="M46 34V9l-9 7v18z" fill="#34a853"/><path d="M2 9l22 17L46 9V6c0-3-3.5-4.5-5.8-2.7L24 15.6 7.8 3.3C5.5 1.5 2 3 2 6z" fill="#ea4335"/></svg>
+  <div class="a" style="left:66px;top:20px;font-size:28px;line-height:34px;color:#5f6368">Gmail</div>
+  <div class="sr"><span style="left:69px">Search mail</span></div>
+  <div class="ic" style="left:334px;top:24px">${S(P.search, 26)}</div>
+  <div class="ic" style="left:1025px;top:24px">${S(P.sliders, 26)}</div>
+  <div class="a" style="left:1111px;top:18px;width:40px;height:40px;border:2px solid #0f2b46;border-radius:6px;background:#fff"><div style="position:absolute;left:9px;top:9px;width:18px;height:18px;border-radius:5px;background:#0f2b46"></div></div>
+  <div class="a" style="left:1148px;top:14px;width:11px;height:11px;border-radius:50%;background:#1a73e8"></div>
+  <div class="a" style="left:1161px;top:8px;width:126px;height:60px;border-radius:30px;background:#e9eef6"><i class="a" style="left:18px;top:24px;width:13px;height:13px;border-radius:50%;background:#1e8e3e"></i><span class="a" style="left:42px;top:0;line-height:60px;font-size:18px;color:#202124">Active</span><span class="ic" style="left:98px;top:19px">${S(P.down, 22)}</span></div>
+  <div class="cmp"><span class="ic" style="left:34px;top:22px;color:#001d35;line-height:0;width:26px">${S(P.pencil, 26)}</span><span>Compose</span></div>
+  <div class="nv sel" style="top:178px"><span class="ic" style="left:26px;top:8px;color:#202124">${S(P.inbox, 22)}</span><span>Inbox</span><em>430</em></div>
+  <div class="nv" style="top:218px"><span class="ic" style="left:26px;top:8px">${S(P.star, 22)}</span><span>Starred</span></div>
+  <div class="nv" style="top:258px"><span class="ic" style="left:26px;top:8px">${S(P.clock, 22)}</span><span>Snoozed</span></div>
+  <div class="nv" style="top:298px"><span class="ic" style="left:26px;top:8px">${S(P.send, 22)}</span><span>Sent</span></div>
+  <div class="nv" style="top:338px"><span class="ic" style="left:26px;top:8px">${S(P.file, 22)}</span><span>Drafts</span></div>
+  <div class="nv" style="top:378px"><span class="ic" style="left:4px;top:8px">${S(P.down, 20)}</span><span class="ic" style="left:26px;top:8px">${S(P.tag, 22)}</span><span>Categories</span></div>
+  <div class="nv" style="top:418px"><span class="ic" style="left:38px;top:8px">${S(P.bag, 20)}</span><span style="left:74px">Purchases</span></div>
+  <div class="nv" style="top:458px"><span class="ic" style="left:26px;top:8px">${S(P.down, 22)}</span><span style="left:74px">More</span></div>
+  <div class="main"></div>
+  <div class="ic" style="left:333px;top:97px">${S(P.arrL, 24)}</div>
+  <div class="ic" style="left:401px;top:97px">${S(P.archive, 24)}</div>
+  <div class="ic" style="left:457px;top:97px">${S(P.report, 24)}</div>
+  <div class="ic" style="left:512px;top:97px">${S(P.trash, 24)}</div>
+  <div class="a" style="left:562px;top:94px;width:1px;height:30px;background:#dadce0"></div>
+  <div class="ic" style="left:587px;top:97px">${S(P.mail, 24)}</div>
+  <div class="ic" style="left:642px;top:97px">${S(P.clock, 24)}</div>
+  <div class="ic" style="left:698px;top:97px">${S(P.taskp, 24)}</div>
+  <div class="a" style="left:745px;top:94px;width:1px;height:30px;background:#dadce0"></div>
+  <div class="ic" style="left:765px;top:97px">${S(P.folder, 24)}</div>
+  <div class="ic" style="left:818px;top:97px">${S(P.tag, 24)}</div>
+  <div class="ic" style="left:877px;top:97px">${S(P.more, 24)}</div>
+  <div class="a sbj">Réinitialisation de votre mot de passe</div>
+  <div class="a bd" style="left:872px;top:169px;background:#fde293;color:#3c2e00">External</div>
+  <div class="a bd" style="left:960px;top:169px;background:#e3e3e3;color:#444">Inbox ×</div>
+  <div class="a" style="left:332px;top:223px;width:50px;height:50px;border-radius:50%;background:#8ab4f8;overflow:hidden"><svg viewBox="0 0 24 24" width="50" height="50" fill="#4a7bd9"><circle cx="12" cy="9" r="4.4"/><path d="M3.5 24c0-5.4 3.8-8.4 8.5-8.4s8.5 3 8.5 8.4z"/></svg></div>
+  <div class="a" style="left:402px;top:223px;font-size:18px;line-height:24px;font-weight:500;color:#202124">no-reply@rifline.elanrif.com</div>
+  <div class="a" style="left:402px;top:250px;font-size:14px;line-height:22px;color:#5f6368">to me ▾</div>
+  <div class="a" style="left:403px;top:287px;width:40px;height:40px;border-radius:10px;background:#0f2b46"><div class="a" style="left:11px;top:11px;width:18px;height:18px;border-radius:4px;border:3px solid #7fb4ff"></div></div>
+  <div class="sel1" style="left:458px;top:279px;width:168px">français<span class="ic" style="left:136px;top:15px">${S(P.down, 22)}</span></div>
+  <div class="sel1" style="left:638px;top:279px;width:168px">français<span class="ic" style="left:136px;top:15px">${S(P.down, 22)}</span></div>
+  <div class="tb" style="left:826px">Traduire cet e-mail</div>
+  <div class="a" style="left:1012px;top:279px;width:44px;height:55px;border:1px solid #c4c7c5;border-radius:8px;background:#fff"><span class="ic" style="left:9px;top:15px">${S(P.arrL, 24)}</span></div>
+  <div class="txt" style="top:350px">Bonjour,</div>
+  <div class="txt" style="top:398px">Pour choisir un nouveau mot de passe, cliquez sur ce lien (valable 30 minutes) :</div>
+  <div class="txt" style="top:423px"><span class="lnk">https://rifline.elanrif.com/reset-password?token=<span class="bl">Xk3fT9aQwLm2ZpR7vBnC4dYeH8sUj5G</span></span></div>
+  <div class="txt" style="top:473px">Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</div>
+</div>`,
+          "gmc",
+        );
+
+      /* ---------- storyboard ----------
+   ev : ['cap',t,txt] ['zoom',t,fx,fy,s] ['mv',t,d,sel,fx,fy] ['click',t,sel,mode]
+        ['type',t,d,sel,txt,mask,strength] ['end',t]  (t relatif au début de la diapo, en s)       */
+      const SC = [
+        {
+          id: "login",
+          html: pageLogin,
+          L: 12.8,
+          ev: [
+            ["cap", 0.3, "Connexion : Google, Twitter ou email"],
+            ["zoom", 2.8, 0.22, 0.55, 1.2],
+            ["cap", 2.8, "Saisie de l'email et du mot de passe"],
+            ["mv", 2.9, 0.5, "[data-n=email]", 0.3, 0.5],
+            ["click", 3.5, "[data-n=email]", "f"],
+            ["type", 3.6, 1.0, "[data-n=email]", "sara@exemple.com"],
+            ["mv", 4.7, 0.5, "[data-n=pwd]", 0.3, 0.5],
+            ["click", 5.3, "[data-n=pwd]", "f"],
+            ["type", 5.4, 0.9, "[data-n=pwd]", "motdepasse1", 1],
+            ["cap", 6.8, "Case « Se rappeler de moi »"],
+            ["mv", 6.9, 0.5, ".chk", 0.5, 0.5],
+            ["click", 7.5, ".chk", "chk"],
+            ["cap", 9.3, "Clic sur « Se connecter »"],
+            ["mv", 9.4, 0.6, ".btn", 0.5, 0.5],
+            ["click", 10.3, ".btn", "press"],
+            ["end", 11.8],
+          ],
+        },
+        {
+          id: "register",
+          html: pageRegister,
+          L: 17.4,
+          ev: [
+            ["cap", 0.3, "Formulaire d'inscription"],
+            ["zoom", 2.8, 0.22, 0.5, 1.1],
+            ["cap", 2.8, "Nom, prénom, email et téléphone"],
+            ["mv", 2.9, 0.5, "[data-n=nom]", 0.3, 0.5],
+            ["click", 3.5, "[data-n=nom]", "f"],
+            ["type", 3.6, 0.6, "[data-n=nom]", "Alaoui"],
+            ["mv", 4.2, 0.4, "[data-n=pre]", 0.3, 0.5],
+            ["click", 4.65, "[data-n=pre]", "f"],
+            ["type", 4.7, 0.45, "[data-n=pre]", "Sara"],
+            ["mv", 5.15, 0.45, "[data-n=mail]", 0.3, 0.5],
+            ["click", 5.65, "[data-n=mail]", "f"],
+            ["type", 5.7, 1.0, "[data-n=mail]", "sara@exemple.com"],
+            ["mv", 6.7, 0.4, "[data-n=tel]", 0.7, 0.5],
+            ["click", 7.15, "[data-n=tel]", "f"],
+            ["type", 7.2, 1.0, "[data-n=tel]", "6 12 34 56 78"],
+            ["cap", 8.4, "Mot de passe et confirmation"],
+            ["mv", 8.45, 0.5, "[data-n=pwd]", 0.3, 0.5],
+            ["click", 9.0, "[data-n=pwd]", "f"],
+            ["type", 9.05, 0.8, "[data-n=pwd]", "motdepasse12", 1],
+            ["mv", 9.85, 0.4, "[data-n=conf]", 0.3, 0.5],
+            ["click", 10.3, "[data-n=conf]", "f"],
+            ["type", 10.35, 0.8, "[data-n=conf]", "motdepasse12", 1],
+            ["cap", 11.4, "Acceptation des conditions d'utilisation"],
+            ["mv", 11.45, 0.5, ".chk", 0.5, 0.5],
+            ["click", 12.05, ".chk", "chk"],
+            ["cap", 13.9, "Clic sur « S'inscrire »"],
+            ["mv", 14.0, 0.6, ".btn", 0.5, 0.5],
+            ["click", 14.9, ".btn", "press"],
+            ["end", 16.4],
+          ],
+        },
+        {
+          id: "forgot",
+          html: pageForgot,
+          L: 9.3,
+          ev: [
+            ["cap", 0.3, "Mot de passe oublié"],
+            ["zoom", 2.8, 0.22, 0.55, 1.22],
+            ["cap", 2.8, "Saisie de l'email"],
+            ["mv", 2.9, 0.5, "[data-n=mail]", 0.3, 0.5],
+            ["click", 3.5, "[data-n=mail]", "f"],
+            ["type", 3.6, 1.0, "[data-n=mail]", "sara@exemple.com"],
+            ["cap", 5.8, "Clic sur « Envoyer le lien »"],
+            ["mv", 5.9, 0.6, ".btn", 0.5, 0.5],
+            ["click", 6.8, ".btn", "press"],
+            ["end", 8.3],
+          ],
+        },
+        {
+          id: "check",
+          html: pageCheck,
+          L: 6.3,
+          ev: [
+            ["cap", 0.3, "Vérifiez votre boîte mail"],
+            ["zoom", 2.8, 0.22, 0.55, 1.22],
+            ["cap", 2.8, "Lien de réinitialisation valable 30 minutes"],
+            ["end", 5.3],
+          ],
+        },
+        {
+          id: "gmail",
+          html: pageGmail,
+          L: 6.3,
+          ev: [
+            ["cap", 0.3, "L'e-mail de réinitialisation du mot de passe"],
+            ["zoom", 2.8, 0.45, 0.6, 1.22],
+            ["cap", 2.8, "Clic sur le lien (valable 30 minutes)"],
+            ["mv", 2.9, 0.8, ".lnk", 0.5, 0.5],
+            ["click", 4.2, ".lnk", "press"],
+            ["end", 5.3],
+          ],
+        },
+        {
+          id: "reset",
+          html: pageReset,
+          L: 10.4,
+          ev: [
+            ["cap", 0.3, "Nouveau mot de passe"],
+            ["zoom", 2.8, 0.22, 0.55, 1.2],
+            ["cap", 2.8, "Saisie du mot de passe : force très forte"],
+            ["mv", 2.9, 0.5, "[data-n=np]", 0.3, 0.5],
+            ["click", 3.5, "[data-n=np]", "f"],
+            ["type", 3.6, 1.4, "[data-n=np]", "Rifline#Secure2026!abc", 1, 1],
+            ["cap", 6.0, "Confirmation, puis « Modifier le mot de passe »"],
+            ["mv", 6.1, 0.5, "[data-n=cp]", 0.3, 0.5],
+            ["click", 6.7, "[data-n=cp]", "f"],
+            ["type", 6.8, 1.4, "[data-n=cp]", "Rifline#Secure2026!abc", 1],
+            ["mv", 8.2, 0.6, ".btn", 0.5, 0.5],
+            ["click", 9.0, ".btn", "press"],
+            ["end", 9.4],
+          ],
+        },
+      ];
+      const INTRO_T = 2.6; // la 1re diapo chevauche la fin de l'intro
+      let T0 = INTRO_T;
+      SC.forEach((s) => {
+        s.t0 = T0;
+        T0 += s.L;
+      });
+      const END = T0;
+      {
+        const m = Math.floor(END / 60),
+          s = Math.round(END % 60);
+        $("#dur").textContent = (m ? m + " min " : "") + s + " s";
+      }
+
+      /* ---------- DOM ---------- */
+      const intro = document.createElement("div");
+      intro.className = "slide intro vis";
+      intro.innerHTML =
+        '<div class="w">Rifline</div><div class="tg">Le réseau social où chacun s\'exprime</div><div class="sb">Authentification</div>';
+      stage.appendChild(intro);
+      const introEls = [...intro.children];
+      SC.forEach((s) => {
+        const d = document.createElement("div");
+        d.className = "slide";
+        d.innerHTML = s.html();
+        stage.appendChild(d);
+        s.el = d;
+        s.win = $(".win", d);
+        s.cur = $(".cur", d);
+      });
+
+      /* ---------- moteur ---------- */
+      const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+      const ease = (p) =>
+        p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      let capV = 0;
+      function say(txt) {
+        const v = ++capV;
+        cap.style.opacity = 0;
+        setTimeout(() => {
+          if (v !== capV) return;
+          cap.textContent = txt;
+          cap.style.opacity = 1;
+        }, 200);
+      }
+      function hideCap() {
+        ++capV;
+        cap.style.opacity = 0;
+      }
+
+      function zoomTo(w, fx, fy, s, d) {
+        const W = 1640,
+          H = 884;
+        w.style.transitionDuration = d + "s";
+        let tx = -(fx - 0.5) * W * s,
+          ty = -(fy - 0.5) * H * s;
+        const hw = (W * s) / 2,
+          hh = (H * s) / 2;
+        tx = hw * 2 > 1920 ? clamp(tx, 960 - hw, hw - 960) : 0;
+        ty = hh * 2 > 1080 ? clamp(ty, 556 - hh, hh - 524) : 0;
+        w.style.transform =
+          s === 1 ? "" : `translate(${tx}px,${ty}px) scale(${s})`;
+      }
+      function tpos(el, sel, fx, fy) {
+        // position en coordonnées de la fenêtre (1640 px de large)
+        const t = el.querySelector(sel).getBoundingClientRect(),
+          w = $(".win", el).getBoundingClientRect(),
+          k = 1640 / w.width;
+        return {
+          x: (t.left + t.width * fx - w.left) * k,
+          y: (t.top + t.height * fy - w.top) * k,
+        };
+      }
+      function curAt(s, t) {
+        const k = s.kf;
+        let i = 0;
+        while (i < k.length - 1 && k[i + 1].t <= t) i++;
+        if (i < k.length - 1 && t > k[i].t) {
+          const p = ease(clamp((t - k[i].t) / (k[i + 1].t - k[i].t), 0, 1));
+          return {
+            x: k[i].x + (k[i + 1].x - k[i].x) * p,
+            y: k[i].y + (k[i + 1].y - k[i].y) * p,
+          };
+        }
+        return { x: k[i].x, y: k[i].y };
+      }
+      function ripple(w, x, y) {
+        const r = document.createElement("i");
+        r.className = "rip";
+        r.style.left = x + "px";
+        r.style.top = y + "px";
+        w.appendChild(r);
+        setTimeout(() => r.remove(), 700);
+      }
+      const clearFocus = (el) =>
+        el.querySelectorAll(".in.f").forEach((e) => e.classList.remove("f"));
+
+      let cues = [],
+        ci = 0,
+        now = 0,
+        running = false,
+        paused = false,
+        built = false,
+        last = 0;
+
+      function build() {
+        cues = [];
+        SC.forEach((s, i) => {
+          s.kf = [{ t: s.t0, x: 1380, y: 700 }];
+          s.typers = [];
+          s.hasMv = false;
+          const el = s.el,
+            w = s.win;
+          cues.push([s.t0, () => el.classList.add("vis")]);
+          if (i < SC.length - 1)
+            cues.push([
+              s.t0 + s.L,
+              () => {
+                el.classList.remove("vis");
+                el.classList.add("out");
+              },
+            ]);
+          for (const e of s.ev) {
+            const [k, t, ...a] = e,
+              T = s.t0 + t;
+            if (k === "cap") cues.push([T, () => say(a[0])]);
+            else if (k === "zoom")
+              cues.push([T, () => zoomTo(w, a[0], a[1], a[2], 1.4)]);
+            else if (k === "end")
+              cues.push([
+                T,
+                () => {
+                  hideCap();
+                  zoomTo(w, 0.5, 0.5, 1, 0.9);
+                  clearFocus(el);
+                },
+              ]);
+            else if (k === "mv") {
+              const [d, sel, fx, fy] = a,
+                p = tpos(el, sel, fx, fy),
+                l = s.kf[s.kf.length - 1];
+              s.kf.push({ t: T, x: l.x, y: l.y }, { t: T + d, x: p.x, y: p.y });
+              s.hasMv = true;
+            } else if (k === "click") {
+              const [sel, mode] = a,
+                p = curAt(s, T),
+                tg = el.querySelector(sel);
+              cues.push([
+                T,
+                () => {
+                  ripple(w, p.x, p.y);
+                  if (mode === "chk") tg.classList.toggle("on");
+                  else {
+                    clearFocus(el);
+                    tg.classList.add(mode === "press" ? "press" : "f");
+                  }
+                },
+              ]);
+              if (mode === "press")
+                cues.push([T + 0.25, () => tg.classList.remove("press")]);
+            } else if (k === "type") {
+              const [d, sel, txt, mask, str] = a,
+                box = el.querySelector(sel);
+              s.typers.push({
+                t: T,
+                d,
+                txt,
+                mask,
+                str,
+                val: box.querySelector(".val"),
+                ph: box.querySelector(".ph"),
+                n: -1,
+              });
+            }
+          }
+          if (s.hasMv)
+            cues.push([
+              s.t0 + 0.4,
+              () => {
+                s.cur.style.opacity = 1;
+              },
+            ]);
+        });
+        cues.push([
+          SC[0].t0,
+          () => {
+            intro.classList.remove("vis");
+            intro.classList.add("out");
+          },
+        ]);
+        [[0.15], [0.55], [0.95]].forEach(([t], i) =>
+          cues.push([t, () => introEls[i].classList.add("on")]),
+        );
+        cues.sort((a, b) => a[0] - b[0]);
+        built = true;
+      }
+
+      function reset() {
+        hideCap();
+        ci = 0;
+        [intro, ...SC.map((s) => s.el)].forEach((e) => {
+          e.style.transition = "none";
+          e.className = "slide" + (e === intro ? " intro vis" : "");
+          void e.offsetWidth;
+          e.style.transition = "";
+        });
+        introEls.forEach((e) => e.classList.remove("on"));
+        SC.forEach((s) => {
+          s.win.style.transitionDuration = "0s";
+          s.win.style.transform = "";
+          s.cur.style.opacity = 0;
+          s.cur.style.transform = `translate(${s.kf[0].x - 5}px,${s.kf[0].y - 2.5}px)`;
+          s.el.querySelectorAll(".in").forEach((e) => e.classList.remove("f"));
+          s.el
+            .querySelectorAll(".chk")
+            .forEach((e) => e.classList.remove("on"));
+          s.el
+            .querySelectorAll(".btn,.lnk")
+            .forEach((e) => e.classList.remove("press"));
+          s.el
+            .querySelectorAll(".str i")
+            .forEach((e) => e.classList.remove("on"));
+          s.el.querySelectorAll(".strl").forEach((e) => (e.style.opacity = 0));
+          s.el.querySelectorAll(".rip").forEach((e) => e.remove());
+          s.typers.forEach((y) => {
+            y.n = -1;
+            y.val.textContent = "";
+            y.ph.style.display = "";
+          });
+        });
+      }
+
+      function tick() {
+        while (ci < cues.length && cues[ci][0] <= now) {
+          cues[ci][1]();
+          ci++;
+        }
+        for (const s of SC) {
+          if (now < s.t0 - 0.2 || now > s.t0 + s.L + 1.4) continue;
+          for (const y of s.typers) {
+            let n =
+              now < y.t
+                ? 0
+                : now >= y.t + y.d
+                  ? y.txt.length
+                  : Math.min(
+                      y.txt.length,
+                      Math.floor(((now - y.t) / y.d) * y.txt.length) + 1,
+                    );
+            if (n === y.n) continue;
+            y.n = n;
+            y.val.textContent = y.mask ? "•".repeat(n) : y.txt.slice(0, n);
+            y.ph.style.display = n ? "none" : "";
+            if (y.str) {
+              const lv = Math.floor((n * 5) / y.txt.length);
+              s.el
+                .querySelectorAll(".str i")
+                .forEach((b, j) => b.classList.toggle("on", j < lv));
+              s.el.querySelector(".strl").style.opacity = lv >= 5 ? 1 : 0;
+            }
+          }
+          if (s.hasMv) {
+            const p = curAt(s, now);
+            s.cur.style.transform = `translate(${p.x - 5}px,${p.y - 2.5}px)`;
+          }
+        }
+      }
+
+      function frame(ts) {
+        if (!running) return;
+        const dt = last ? Math.min(0.25, (ts - last) / 1000) : 0;
+        last = ts;
+        if (!paused) now += dt;
+        tick();
+        if (now >= END) {
+          tick();
+          running = false;
+          hideCap();
+          return;
+        }
+        requestAnimationFrame(frame);
+      }
+      function start() {
+        if (!built) build();
+        reset();
+        now = 0;
+        paused = false;
+        last = 0;
+        document.body.classList.add("rec");
+        $("#ov").style.display = "none";
+        if (!running) {
+          running = true;
+          requestAnimationFrame(frame);
+        } else {
+          last = 0;
+        }
+      }
+      function stop() {
+        running = false;
+        paused = false;
+        reset();
+        now = 0;
+        document.body.classList.remove("rec");
+        $("#ov").style.display = "flex";
+        if (document.fullscreenElement) document.exitFullscreen();
+      }
+
+      /* ---------- mise à l'échelle & raccourcis ---------- */
+      function fit() {
+        const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+        $("#fit").style.transform =
+          `translate(${-960 * s}px,${-540 * s}px) scale(${s})`;
+      }
+      addEventListener("resize", fit);
+      fit();
+
+      $("#go").onclick = () => {
+        (document.fonts && document.fonts.ready
+          ? document.fonts.ready
+          : Promise.resolve()
+        ).then(() => {
+          built = false;
+          start();
+        });
+      };
+      addEventListener("keydown", (e) => {
+        if (e.code === "Space") {
+          e.preventDefault();
+          if (running) paused = !paused;
+        } else if (e.key === "r" || e.key === "R") {
+          if ($("#ov").style.display === "none") {
+            built = false;
+            start();
+          }
+        } else if (e.key === "f" || e.key === "F") {
+          document.fullscreenElement
+            ? document.exitFullscreen()
+            : document.documentElement.requestFullscreen();
+        } else if (e.key === "Escape") {
+          if (!document.fullscreenElement) stop();
+        }
+      });
+    </script>
+  </body>
+</html>

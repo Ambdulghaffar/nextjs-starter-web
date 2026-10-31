@@ -1,0 +1,61 @@
+#!/usr/bin/env sh
+
+echo ''
+echo '🏗️👷 Styling, testing and building your project before committing...'
+echo ''
+
+# ─────────────────────────────────────────────
+# ESLint / Prettier
+# ─────────────────────────────────────────────
+
+echo '🧹 Running lint-staged...'
+
+if ! npx lint-staged; then
+    echo ''
+    echo '❌🧹 Linting/formatting failed!'
+    echo '👉 Fix the issues above, stage your changes and try again.'
+    exit 1
+fi
+
+echo '✅🧹 Linting/formatting passed!'
+echo ''
+
+# ─────────────────────────────────────────────
+# TypeScript
+# ─────────────────────────────────────────────
+
+echo '🔍 Checking TypeScript types...'
+
+if ! npm run check-types; then
+    echo ''
+    echo '❌🤡 Type check failed!'
+    echo '👉 Fix the TypeScript errors above and try again.'
+    exit 1
+fi
+
+echo '✅🔍 Type check passed!'
+echo ''
+
+# ─────────────────────────────────────────────
+# Tests
+# ─────────────────────────────────────────────
+
+echo '🧪 Running tests...'
+
+if ! npm run test; then
+    echo ''
+    echo '❌🧪 Tests failed!'
+    echo '👉 Check the errors above and fix your tests.'
+    exit 1
+fi
+
+echo '✅🧪 All tests passed!'
+echo ''
+
+# ─────────────────────────────────────────────
+# Success
+# ─────────────────────────────────────────────
+
+echo '🎉🚀 Everything looks good!'
+echo '✅ Commit approved. Ship it! 🚢'
+echo ''

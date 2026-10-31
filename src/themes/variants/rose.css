@@ -1,0 +1,124 @@
+[data-theme="rose"] {
+  --radius: 0.75rem;
+  --background: oklch(0.985 0.008 10);
+  --foreground: oklch(0.18 0.02 5);
+  --card: oklch(0.995 0.004 10);
+  --card-foreground: oklch(0.18 0.02 5);
+  --popover: oklch(0.995 0.004 10);
+  --popover-foreground: oklch(0.18 0.02 5);
+  --primary: oklch(0.6 0.22 5);
+  --primary-foreground: oklch(0.985 0.005 10);
+  --secondary: oklch(0.955 0.012 10);
+  --secondary-foreground: oklch(0.18 0.02 5);
+  --muted: oklch(0.965 0.006 10);
+  --muted-foreground: oklch(0.49 0.02 5);
+  --accent: oklch(0.945 0.02 8);
+  --accent-foreground: oklch(0.18 0.02 5);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.93 0.009 10);
+  --input: oklch(0.93 0.009 10);
+  --ring: oklch(0.6 0.22 5);
+  --chart-1: oklch(0.6 0.22 5);
+  --chart-2: oklch(0.68 0.11 185);
+  --chart-3: oklch(0.8 0.15 85);
+  --chart-4: oklch(0.6 0.18 295);
+  --chart-5: oklch(0.62 0.15 250);
+  --brand-1: oklch(0.51 0.15 185);
+  --brand-1-foreground: oklch(0.985 0 0);
+  --brand-2: oklch(0.56 0.17 275);
+  --brand-2-foreground: oklch(0.985 0 0);
+  --brand-3: oklch(0.78 0.15 85);
+  --brand-3-foreground: oklch(0.205 0 0);
+  --sidebar: oklch(0.975 0.008 10);
+  --sidebar-foreground: oklch(0.18 0.02 5);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: oklch(0.945 0.02 8);
+  --sidebar-accent-foreground: oklch(0.18 0.02 5);
+  --sidebar-border: oklch(0.93 0.009 10);
+  --sidebar-ring: oklch(0.6 0.22 5);
+}
+
+[data-theme="rose"].dark {
+  --background: oklch(0.225 0.014 5);
+  --foreground: oklch(0.965 0.008 10);
+  --card: oklch(0.255 0.016 5);
+  --card-foreground: oklch(0.965 0.008 10);
+  --popover: oklch(0.255 0.016 5);
+  --popover-foreground: oklch(0.965 0.008 10);
+  --primary: oklch(0.72 0.19 5);
+  --primary-foreground: oklch(0.2 0.04 5);
+  --secondary: oklch(0.3 0.02 5);
+  --secondary-foreground: oklch(0.965 0.008 10);
+  --muted: oklch(0.3 0.012 5);
+  --muted-foreground: oklch(0.73 0.02 8);
+  --accent: oklch(0.33 0.03 8);
+  --accent-foreground: oklch(0.965 0.008 10);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.145 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0.02 8);
+  --chart-1: oklch(0.72 0.19 5);
+  --chart-2: oklch(0.76 0.11 185);
+  --chart-3: oklch(0.86 0.14 85);
+  --chart-4: oklch(0.72 0.17 295);
+  --chart-5: oklch(0.72 0.14 250);
+  --brand-1: oklch(0.74 0.14 185);
+  --brand-1-foreground: oklch(0.145 0 0);
+  --brand-2: oklch(0.74 0.16 275);
+  --brand-2-foreground: oklch(0.145 0 0);
+  --brand-3: oklch(0.8 0.15 85);
+  --brand-3-foreground: oklch(0.145 0 0);
+  --sidebar: oklch(0.255 0.016 5);
+  --sidebar-foreground: oklch(0.965 0.008 10);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: oklch(0.33 0.03 8);
+  --sidebar-accent-foreground: oklch(0.965 0.008 10);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0.02 8);
+}
+
+/*
+  THÈMES : pourquoi `brand-*` et `gray-*` sont redéfinis dans chaque thème
+
+  Ce fichier (tailadmin.css) définit `--color-brand-*` et `--color-gray-*`
+  avec des valeurs fixes (bleu #465fff, gris neutres). Notre sidebar, header,
+  tables, etc. (issus de TailAdmin) les utilisent via `menu-item-*`,
+  `menu-dropdown-*`, `@layer base` (bordures, fond du body) et des classes
+  directes (`text-gray-400`, `text-brand-500`...).
+
+  Ils n'utilisent pas les tokens shadcn (`--primary`, `--sidebar`...).
+  Un `[data-theme]` qui ne redéfinit que shadcn laisse donc tout ça en
+  bleu/gris : chaque thème doit aussi redéfinir brand et gray, avec
+  `--primary: var(--color-brand-500)` (clair) / `brand-400` (sombre).
+*/
+[data-theme="rose"] {
+  --color-brand-25: oklch(0.987 0.008 10);
+  --color-brand-50: oklch(0.971 0.018 10);
+  --color-brand-100: oklch(0.945 0.036 8);
+  --color-brand-200: oklch(0.9 0.07 7);
+  --color-brand-300: oklch(0.83 0.12 6);
+  --color-brand-400: oklch(0.72 0.19 5);
+  --color-brand-500: oklch(0.6 0.22 5);
+  --color-brand-600: oklch(0.54 0.22 4);
+  --color-brand-700: oklch(0.46 0.185 3);
+  --color-brand-800: oklch(0.39 0.15 2);
+  --color-brand-900: oklch(0.33 0.115 0);
+  --color-brand-950: oklch(0.24 0.08 0);
+
+  --color-gray-25: oklch(0.992 0.003 10);
+  --color-gray-50: oklch(0.985 0.005 10);
+  --color-gray-100: oklch(0.966 0.007 10);
+  --color-gray-200: oklch(0.93 0.009 10);
+  --color-gray-300: oklch(0.87 0.011 10);
+  --color-gray-400: oklch(0.72 0.013 10);
+  --color-gray-500: oklch(0.56 0.015 10);
+  --color-gray-600: oklch(0.45 0.015 10);
+  --color-gray-700: oklch(0.37 0.014 10);
+  --color-gray-800: oklch(0.29 0.013 10);
+  --color-gray-900: oklch(0.22 0.012 10);
+  --color-gray-950: oklch(0.17 0.01 10);
+}

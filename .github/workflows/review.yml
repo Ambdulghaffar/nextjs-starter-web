@@ -1,0 +1,36 @@
+name: Code Review
+
+# Se déclenche automatiquement sur toute PR visant main ou staging
+on:
+  pull_request:
+    branches:
+      - main
+      - staging
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Vérifier le formatage (Prettier)
+        run: npm run format:check
+
+      - name: Linter (ESLint)
+        run: npm run lint
+
+      - name: Vérifier les types (TypeScript)
+        run: npm run check-types
+
+      - name: Build du projet
+        run: npm run build
